@@ -1,1 +1,20 @@
+# --- system bazowy (backend domyślny: apt) ---
+base
+linux
+linux-firmware
+systemd -> apt
+networkmanager -> apt
+grub -> apt
+efibootmgr -> apt
 
+# --- ekosystem Zenith, zawsze przez "own" (bez curl) ---
+zpm -> own
+installer -> own
+kernel -> own
+
+# --- narzędzia dodatkowe z jawnie wybranych backendów ---
+htop -> apt
+neovim -> apt
+git -> apt
+ripgrep -> cargo
+firefox -> flatpak
