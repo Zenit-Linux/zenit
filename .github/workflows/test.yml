@@ -1,1 +1,40 @@
+name: Smoke test build
 
+on:
+  pull_request:
+  workflow_dispatch: {}
+
+jobs:
+  rootfs-smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y squashfs-tools qemu-user-static binfmt-support gnupg tar
+
+      - name: Install janet
+        run: |
+          sudo apt-get install -y janet || (curl -fsSL https://janet-lang.org/install.sh | sudo bash)
+
+      - name: Install zlb
+        run: |
+          curl -fsSL https://github.com/Zenith-Linux/zlb/releases/latest/download/zlb-linux-x86_64 -o /usr/local/bin/zlb
+          chmod +x /usr/local/bin/zlb
+
+      - name: Cache out/cache
+        uses: actions/cache@v4
+        with:
+          path: out/cache
+          key: zlb-cache-x86_64-${{ hashFiles('distro.hcl', 'modules/**') }}
+          restore-keys: zlb-cache-x86_64-
+
+      - name: zlb build rootfs (smoke test)
+        run: zlb build rootfs --arch x86_64
+
+      - name: Sanity-check rootfs contents
+        run: |
+          test -f out/cache/rootfs/x86_64/etc/os-release
+          test -x out/cache/rootfs/x86_64/usr/local/bin/installer || echo "installer nie osadzony (auto_fetch=false?) -- ok w smoke teście"
