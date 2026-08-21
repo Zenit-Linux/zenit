@@ -1,1 +1,46 @@
+name: Build menu
 
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Co zbudować?"
+        required: true
+        type: choice
+        default: "iso"
+        options:
+          - iso
+          - oci
+          - standard
+          - all
+      arch:
+        description: "Architektura (puste = wszystkie z distro.hcl)"
+        required: false
+        default: ""
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wywołaj wybrane workflow'y
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const target = context.payload.inputs.target;
+            const arch = context.payload.inputs.arch || "";
+            const workflows = {
+              iso: "build-iso.yml",
+              oci: "build-oci.yml",
+              standard: "build-standard.yml",
+            };
+            const toRun = target === "all" ? Object.values(workflows) : [workflows[target]];
+            for (const wf of toRun) {
+              console.log(`Uruchamiam ${wf} (arch=${arch || "wszystkie"})`);
+              await github.rest.actions.createWorkflowDispatch({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                workflow_id: wf,
+                ref: context.ref,
+                inputs: arch ? { arch } : {},
+              });
+            }
