@@ -1,1 +1,37 @@
+name: Setup & validate
 
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+  workflow_dispatch: {}
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install janet
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y janet || (curl -fsSL https://janet-lang.org/install.sh | sudo bash)
+
+      - name: Install zlb
+        run: |
+          curl -fsSL https://github.com/Zenith-Linux/zlb/releases/latest/download/zlb-linux-x86_64 -o /usr/local/bin/zlb
+          chmod +x /usr/local/bin/zlb
+
+      - name: Validate distro.hcl
+        run: zlb manifest validate
+
+      - name: Lint janet hooks (modules/**/scripts/*.janet)
+        run: |
+          find modules -name '*.janet' -print0 | xargs -0 -r -n1 janet -c
+
+      - name: Check keys/default.hcl and package lists are non-empty
+        run: |
+          test -s distro.hcl
+          test -s keys/default.hcl
+          test -s modules/package.list
+          echo "OK -- pliki manifestu nie są puste."
