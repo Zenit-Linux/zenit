@@ -1,1 +1,61 @@
+name: Build OCI image
 
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    name: build (${{ matrix.arch }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: ["x86_64", "aarch64"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y squashfs-tools qemu-user-static binfmt-support gnupg tar skopeo
+
+      - name: Install janet
+        run: |
+          sudo apt-get install -y janet || (curl -fsSL https://janet-lang.org/install.sh | sudo bash)
+
+      - name: Install zlb
+        run: |
+          curl -fsSL https://github.com/Zenith-Linux/zlb/releases/latest/download/zlb-linux-x86_64 -o /usr/local/bin/zlb
+          chmod +x /usr/local/bin/zlb
+
+      - name: Cache out/cache
+        uses: actions/cache@v4
+        with:
+          path: out/cache
+          key: zlb-cache-${{ matrix.arch }}-${{ hashFiles('distro.hcl', 'modules/**') }}
+          restore-keys: zlb-cache-${{ matrix.arch }}-
+
+      - name: zlb build rootfs
+        run: zlb build rootfs --arch ${{ matrix.arch }}
+
+      - name: zlb build oci
+        run: zlb build oci --arch ${{ matrix.arch }}
+
+      - name: Log in to registry
+        if: ${{ secrets.REGISTRY_TOKEN != '' }}
+        run: echo "${{ secrets.REGISTRY_TOKEN }}" | skopeo login --username "${{ github.actor }}" --password-stdin ghcr.io
+
+      - name: Push OCI image
+        if: ${{ secrets.REGISTRY_TOKEN != '' }}
+        run: |
+          for d in out/oci/*/; do
+            skopeo copy "oci:${d%/}" "docker://ghcr.io/zenith-linux/zenith-linux:${{ matrix.arch }}-${{ github.ref_name }}"
+          done
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: zenith-linux-oci-${{ matrix.arch }}
+          path: out/oci/**
