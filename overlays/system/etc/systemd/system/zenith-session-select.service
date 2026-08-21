@@ -1,0 +1,15 @@
+[Unit]
+Description=Zenith session selector (live vs. installer, wg /proc/cmdline)
+DefaultDependencies=no
+Before=display-manager.service
+After=systemd-udev-settle.service
+Wants=systemd-udev-settle.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/zenith-session-select
+RemainAfterExit=yes
+StandardOutput=journal+console
+
+[Install]
+WantedBy=graphical.target
