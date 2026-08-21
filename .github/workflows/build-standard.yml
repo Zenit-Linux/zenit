@@ -1,1 +1,62 @@
+name: Build standard rootfs
 
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+    inputs:
+      arch:
+        description: "Architektura (puste = wszystkie z distro.hcl)"
+        required: false
+        default: ""
+
+jobs:
+  build:
+    name: build (${{ matrix.arch }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: ["x86_64", "aarch64"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y squashfs-tools qemu-user-static binfmt-support gnupg tar
+
+      - name: Install janet
+        run: |
+          sudo apt-get install -y janet || (curl -fsSL https://janet-lang.org/install.sh | sudo bash)
+
+      - name: Install zlb
+        run: |
+          curl -fsSL https://github.com/Zenith-Linux/zlb/releases/latest/download/zlb-linux-x86_64 -o /usr/local/bin/zlb
+          chmod +x /usr/local/bin/zlb
+
+      - name: Cache out/cache
+        uses: actions/cache@v4
+        with:
+          path: out/cache
+          key: zlb-cache-${{ matrix.arch }}-${{ hashFiles('distro.hcl', 'modules/**') }}
+          restore-keys: zlb-cache-${{ matrix.arch }}-
+
+      - name: zlb build rootfs
+        if: ${{ github.event.inputs.arch == '' || github.event.inputs.arch == matrix.arch }}
+        run: zlb build rootfs --arch ${{ matrix.arch }}
+
+      - name: Package rootfs tarball
+        if: ${{ github.event.inputs.arch == '' || github.event.inputs.arch == matrix.arch }}
+        run: |
+          mkdir -p out
+          tar -C out/cache/rootfs/${{ matrix.arch }} -cJf out/zenith-linux-standard-${{ matrix.arch }}.tar.xz .
+          sha256sum out/zenith-linux-standard-${{ matrix.arch }}.tar.xz > out/zenith-linux-standard-${{ matrix.arch }}.tar.xz.sha256
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: zenith-linux-standard-${{ matrix.arch }}
+          path: |
+            out/zenith-linux-standard-${{ matrix.arch }}.tar.xz
+            out/zenith-linux-standard-${{ matrix.arch }}.tar.xz.sha256
