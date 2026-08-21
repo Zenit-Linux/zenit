@@ -1,6 +1,6 @@
 distro {
   name     = "Zenith Linux"
-  codename = "nova"
+  codename = "testing"
   version  = "0.1.0"
 
   # "self" -- Zenith Linux bootstrapuje się z poprzednio zbudowanego
