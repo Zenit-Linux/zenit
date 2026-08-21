@@ -1,0 +1,13 @@
+#!/bin/sh
+CMDLINE="$(cat /proc/cmdline 2>/dev/null || true)"
+
+case " $CMDLINE " in
+  *" installer=1 "*|*" installer "*)
+    echo "zenith-session-select: uruchamiam Zenith Installer pełnoekranowo"
+    exec /usr/local/bin/installer --fullscreen
+    ;;
+  *)
+    echo "zenith-session-select: sesja live -- normalny pulpit (installer dostępny z menu)"
+    exit 0
+    ;;
+esac
