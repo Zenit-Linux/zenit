@@ -1,20 +1,63 @@
 # --- system bazowy (backend domyślny: apt) ---
-base
-linux
-linux-firmware
-systemd -> apt
-networkmanager -> apt
-grub -> apt
-efibootmgr -> apt
+package "base" {}
+package "linux-firmware" {}
 
-# --- ekosystem Zenith, zawsze przez "own" (bez curl) ---
-zpm -> own
-installer -> own
-kernel -> own
+package "systemd" {
+  backend = "apt"
+}
+package "networkmanager" {
+  backend = "apt"
+}
+package "grub" {
+  backend = "apt"
+}
+package "efibootmgr" {
+  backend = "apt"
+}
+
+# --- ekosystem Zenit, zawsze przez "own" (bez curl) ---
+package "zpm" {
+  backend     = "own"
+  description = "Zenit Package Manager -- wbudowany, domyślny"
+}
+package "installer" {
+  backend = "own"
+}
+package "kernel" {
+  backend     = "own"
+  variant     = "stable"
+  description = "domyślne jądro Linux (branch: stable; dostępne też: rolling/semi-rolling/testing)"
+}
+package "zsrv" {
+  backend     = "own"
+  description = "domyślny init system Zenit (alternatywa dla systemd w przyszłych obrazach minimalnych)"
+}
+package "zboot" {
+  backend     = "own"
+  description = "domyślny bootloader Zenit (alternatywa dla grub w przyszłych obrazach minimalnych)"
+}
 
 # --- narzędzia dodatkowe z jawnie wybranych backendów ---
-htop -> apt
-neovim -> apt
-git -> apt
-ripgrep -> cargo
-firefox -> flatpak
+package "htop" {
+  backend = "apt"
+}
+package "neovim" {
+  backend = "apt"
+}
+package "git" {
+  backend = "apt"
+  # przykład instalacji cross-distro (bezpieczna, izolowana -- patrz
+  # zpm/crossdistro.nim): odkomentuj, żeby pobrać z Debiana testing
+  # zamiast z natywnych repo hosta.
+  # variant = "debian.testing"
+}
+package "ripgrep" {
+  backend = "cargo"
+}
+package "firefox" {
+  backend = "flatpak"
+}
+
+# --- pakiet bez żadnych opcji: backend wzięty z domyślnej dystrybucji
+#     zadeklarowanej w distro.hcl (distro.base / distro.default_backend) ---
+package "curl" {}
