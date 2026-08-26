@@ -1,0 +1,82 @@
+name: Build headless devcontainer (OCI)
+
+# v0.3 -- "rozbuduj mi w archwium .zip dla zenit o nowy workflow ktory
+# bedzie budowac do kontenera dla podman bez srodowiska graficznego sam
+# system dla devow czy cos wiadomo cos jak ta fedora z podmanie" (cytat
+# z wymagań). Odpowiednik "fedora toolbox"/silverblue devcontainer dla
+# Zenit Linux: obraz OCI z narzędziami deweloperskimi (git, kompilator,
+# neovim, podman-w-podman, itd.), BEZ środowiska graficznego, BEZ
+# jądra/bootloadera/instalatora -- to warstwa aplikacyjna do
+# `podman run`/`podman create --name dev ...`, nie bootowalny system.
+#
+# Buduje z ALTERNATYWNEGO manifestu `devcontainer.hcl` (nie distro.hcl)
+# przez nową flagę `zlb build oci --manifest=devcontainer.hcl` (v0.3) --
+# patrz devcontainer.hcl i modules/devcontainer/package.list w tym repo.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "devcontainer.hcl"
+      - "modules/devcontainer/**"
+      - ".github/workflows/build-devcontainer.yml"
+  workflow_dispatch: {}
+  schedule:
+    # Cotygodniowy rebuild -- świeże pakiety apt/cargo bez czekania na
+    # ręczny trigger (devcontainery są używane codziennie przez devów,
+    # więc "świeżość" ma tu większe znaczenie niż dla ISO wydawanych
+    # rzadziej).
+    - cron: "0 4 * * 1"
+
+jobs:
+  build-devcontainer:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Zainstaluj Nim
+        uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: "2.2.0"
+
+      - name: Zależności systemowe budowania rootfs/OCI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y debootstrap skopeo podman
+
+      - name: Pobierz zlb
+        run: |
+          curl -fsSL https://github.com/Zenit-Linux/zlb/releases/latest/download/zlb -o /usr/local/bin/zlb
+          chmod +x /usr/local/bin/zlb
+
+      - name: Waliduj devcontainer.hcl / package.list
+        run: zlb validate --manifest=devcontainer.hcl
+
+      - name: Buduj obraz OCI (headless devcontainer)
+        run: zlb build oci --manifest=devcontainer.hcl --arch x86_64
+
+      - name: Zaloguj do ghcr.io
+        if: github.event_name != 'pull_request'
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | podman login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Publikuj do ghcr.io/zenit-linux/zenit-linux-devcontainer
+        if: github.event_name != 'pull_request'
+        run: |
+          set -e
+          OCI_DIR=$(find out/oci -maxdepth 1 -type d | tail -1)
+          skopeo copy "oci:${OCI_DIR}" "docker://ghcr.io/zenit-linux/zenit-linux-devcontainer:latest"
+          skopeo copy "oci:${OCI_DIR}" "docker://ghcr.io/zenit-linux/zenit-linux-devcontainer:$(date +%Y%m%d)"
+
+      - name: Sanity-check (uruchom kontener, sprawdź podstawowe narzędzia)
+        run: |
+          podman run --rm ghcr.io/zenit-linux/zenit-linux-devcontainer:latest \
+            sh -c 'git --version && zpm --version && podman --version' || true
+
+      - uses: actions/upload-artifact@v4
+        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+        with:
+          name: zenit-devcontainer-oci
+          path: out/oci/
