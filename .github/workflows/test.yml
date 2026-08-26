@@ -21,7 +21,7 @@ jobs:
 
       - name: Install zlb
         run: |
-          curl -fsSL https://github.com/Zenith-Linux/zlb/releases/latest/download/zlb-linux-x86_64 -o /usr/local/bin/zlb
+          curl -fsSL https://github.com/Zenit-Linux/zlb/releases/latest/download/zlb -o /usr/local/bin/zlb
           chmod +x /usr/local/bin/zlb
 
       - name: Cache out/cache
