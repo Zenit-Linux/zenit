@@ -19,11 +19,14 @@ jobs:
 
       - name: Install zlb
         run: |
-          curl -fsSL https://github.com/Zenith-Linux/zlb/releases/latest/download/zlb-linux-x86_64 -o /usr/local/bin/zlb
+          curl -fsSL https://github.com/Zenit-Linux/zlb/releases/latest/download/zlb -o /usr/local/bin/zlb
           chmod +x /usr/local/bin/zlb
 
       - name: Validate distro.hcl
         run: zlb manifest validate
+
+      - name: Validate devcontainer.hcl (headless dev-obraz)
+        run: zlb manifest validate --manifest=devcontainer.hcl
 
       - name: Lint janet hooks (modules/**/scripts/*.janet)
         run: |
@@ -33,5 +36,6 @@ jobs:
         run: |
           test -s distro.hcl
           test -s keys/default.hcl
-          test -s modules/package.list
+          test -s modules/core/package.list
+          test -s modules/devcontainer/package.list
           echo "OK -- pliki manifestu nie są puste."
