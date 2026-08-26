@@ -1,17 +1,17 @@
 distro {
-  name     = "Zenith Linux"
+  name     = "Zenit Linux"
   codename = "testing"
   version  = "0.1.0"
 
-  # "self" -- Zenith Linux bootstrapuje się z poprzednio zbudowanego
-  # ziarna Zenith (out/cache/seeds/), nie z obcej dystrybucji.
+  # "self" -- Zenit Linux bootstrapuje się z poprzednio zbudowanego
+  # ziarna Zenit (out/cache/seeds/), nie z obcej dystrybucji.
   base = "self"
 
   # Domyślny backend zpm dla pakietów bez jawnego "-> backend" w
   # modules/*/package.list. Przy base = "self" domyślnie jest to "apt"
-  # (patrz zlbpkg/manifest.nim::backendForBase w repo zlb) -- Zenith w
+  # (patrz zlbpkg/manifest.nim::backendForBase w repo zlb) -- Zenit w
   # tej fazie projektu korzysta z bazy pakietów Debiana dla pakietów
-  # systemowych, a z ekosystemu własnego ("own") dla narzędzi Zenith.
+  # systemowych, a z ekosystemu własnego ("own") dla narzędzi Zenit.
   default_backend = "apt"
 
   arch = ["x86_64", "aarch64"]
@@ -25,18 +25,18 @@ iso {
   bootloader  = "grub"
   boot_mode   = "hybrid"
   compression = "xz"
-  output      = "zenith-linux-${version}-${arch}.iso"
+  output      = "zenit-linux-${version}-${arch}.iso"
 }
 
 oci {
-  registry   = "ghcr.io/zenith-linux"
-  repository = "zenith-linux"
+  registry   = "ghcr.io/zenit-linux"
+  repository = "zenit-linux"
   tag        = "${version}"
-  output     = "zenith-linux-${version}-${arch}-oci"
+  output     = "zenit-linux-${version}-${arch}-oci"
 }
 
 keys {
-  gpg_key      = "keys/zenith-release.asc"
+  gpg_key      = "keys/zenit-release.asc"
   gpg_key_id   = ""
   zpm_key_list = "keys/default.hcl"
 }
@@ -52,6 +52,6 @@ tools {
   # zlbpkg/tools.nim w repo zlb) zamiast zakładać, że runner CI ma je
   # już zainstalowane.
   auto_fetch    = true
-  zpm_url       = "https://github.com/Zenith-Linux/zpm/releases/download/v0.1/zpm"
-  installer_url = "https://github.com/Zenith-Linux/installer/releases/download/v0.1/installer"
+  zpm_url       = "https://github.com/Zenit-Linux/zpm/releases/download/v0.1/zpm"
+  installer_url = "https://github.com/Zenit-Linux/installer/releases/download/v0.1/installer"
 }
