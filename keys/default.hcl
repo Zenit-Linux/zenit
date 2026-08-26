@@ -1,9 +1,9 @@
-repo "zenith-own" {
-  # Ekosystem własny Zenith (custom/own-repository.json w repo zpm) --
+repo "zenit-own" {
+  # Ekosystem własny Zenit (custom/own-repository.json w repo zpm) --
   # narzędzia takie jak zpm, installer, cr, ow. Weryfikowane przez
   # sha256 zamiast podpisu GPG na tym etapie projektu.
   type      = "own"
-  url       = "https://github.com/Zenith-Linux"
+  url       = "https://github.com/Zenit-Linux"
   trust     = "sha256"
 }
 
