@@ -1,10 +1,10 @@
-# zenith
+# zenit
 
-Source code for Zenith Linux -- kod źródłowy dystrybucji budowanej
-przez [zlb](https://github.com/Zenith-Linux/zlb) (Zenith Linux Builder)
-przy użyciu [zpm](https://github.com/Zenith-Linux/zpm) (Zenith Package
+Source code for Zenit Linux -- kod źródłowy dystrybucji budowanej
+przez [zlb](https://github.com/Zenit-Linux/zlb) (Zenit Linux Builder)
+przy użyciu [zpm](https://github.com/Zenit-Linux/zpm) (Zenit Package
 Manager) jako menedżera pakietów oraz
-[installer](https://github.com/Zenith-Linux/installer) (Zenith
+[installer](https://github.com/Zenit-Linux/installer) (Zenit
 Installer) jako graficznego instalatora osadzonego w obrazie live.
 
 ## Struktura
@@ -13,15 +13,18 @@ Installer) jako graficznego instalatora osadzonego w obrazie live.
 distro.hcl                          -- manifest główny (nazwa, wersja, arch, backend domyślny, tools{})
 keys/default.hcl                    -- zestaw kluczy repo, którym ufa świeży zpm w rootfsie
 modules/core/
-  package.list                      -- pakiety do zainstalowania (składnia "pkg" / "pkg -> backend")
+  package.list                      -- pakiety do zainstalowania (format HCL, blok `package "nazwa" { ... }`
+                                        z polami backend/variant/description -- patrz zlb/docs)
   scripts/setup.janet                 -- hooki pre-packages / post-packages / post-overlay
+installer/
+  config.hcl                          -- konfiguracja Zenit Installer (PLACEHOLDER, patrz zlb/src/zlbpkg/installerconfig.nim)
 overlays/
   branding/                           -- logo, ikony
   home/.bashrc                         -- domyślny .bashrc kont użytkowników
   system/etc/zpm/config.hcl            -- produkcyjna konfiguracja zpm w zainstalowanym systemie
   system/etc/zpm/custom/own-repository.json -- ekosystem własny (zpm, installer, cr, ow)
-  system/etc/systemd/system/zenith-session-select.service
-  system/usr/local/bin/zenith-session-select -- Live vs. Install wg /proc/cmdline
+  system/etc/systemd/system/zenit-session-select.service
+  system/usr/local/bin/zenit-session-select -- Live vs. Install wg /proc/cmdline
 .github/workflows/
   setup.yml            -- walidacja distro.hcl / keys / package.list na każdy push/PR
   test.yml               -- szybki smoke-test (rootfs x86_64) na każdy PR
