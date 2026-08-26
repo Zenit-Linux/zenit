@@ -1,0 +1,41 @@
+# --- narzędzia deweloperskie bazowe ---
+package "base" {}
+package "git" {
+  backend = "apt"
+}
+package "build-essential" {
+  backend     = "apt"
+  description = "gcc/make/itd. -- kompilacja natywnych rozszerzeń"
+}
+package "curl" {}
+package "neovim" {
+  backend = "apt"
+}
+package "htop" {
+  backend = "apt"
+}
+package "ripgrep" {
+  backend = "cargo"
+}
+
+# --- ekosystem Zenit, zawsze przez "own" ---
+package "zpm" {
+  backend     = "own"
+  description = "Zenit Package Manager -- dostępny wewnątrz kontenera do dalszej pracy"
+}
+
+# --- narzędzia kontenerowe (dev-w-kontenerze: podman-in-podman) ---
+package "podman" {
+  backend     = "apt"
+  description = "podman wewnątrz kontenera -- rootless nested containers dla devów"
+}
+package "python3" {
+  backend = "apt"
+}
+package "nodejs" {
+  backend = "apt"
+}
+
+# UWAGA: celowo BRAK: linux/linux-firmware/grub/efibootmgr/networkmanager/
+# systemd (jako init) -- ten obraz nie jest bootowalny, to warstwa
+# aplikacyjna nad istniejącym jądrem hosta (jak każdy kontener OCI).
