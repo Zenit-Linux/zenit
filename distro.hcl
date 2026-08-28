@@ -53,5 +53,4 @@ tools {
   # już zainstalowane.
   auto_fetch    = true
   zpm_url       = "https://github.com/Zenit-Linux/zpm/releases/download/v0.1/zpm"
-  installer_url = "https://github.com/Zenit-Linux/installer/releases/download/v0.1/installer"
 }
