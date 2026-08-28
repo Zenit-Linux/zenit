@@ -1,0 +1,67 @@
+# --- system bazowy (backend domyślny: apt) ---
+package "base" {}
+package "linux" {
+  backend     = "apt"
+  description = "jądro -- wariant server (bez sterowników sprzętu mobilnego/laptopowego)"
+}
+package "linux-firmware" {}
+
+package "systemd" {
+  backend = "apt"
+}
+package "networkmanager" {
+  backend     = "apt"
+  description = "ta sama sieć co edycja desktopowa -- łatwiejsza migracja konfiguracji"
+}
+package "grub" {
+  backend = "apt"
+}
+package "efibootmgr" {
+  backend = "apt"
+}
+
+# --- ekosystem Zenit, zawsze przez "own" ---
+package "zpm" {
+  backend     = "own"
+  description = "Zenit Package Manager -- wbudowany, domyślny"
+}
+package "installer" {
+  backend = "own"
+}
+package "kernel" {
+  backend     = "own"
+  variant     = "stable"
+  description = "domyślne jądro Linux (branch: stable)"
+}
+
+# --- narzędzia typowe dla serwera (bez żadnego pakietu graficznego) ---
+package "openssh-server" {
+  backend     = "apt"
+  description = "dostęp zdalny -- podstawa administracji bez konsoli fizycznej"
+}
+package "htop" {
+  backend = "apt"
+}
+package "neovim" {
+  backend = "apt"
+}
+package "git" {
+  backend = "apt"
+}
+package "curl" {}
+package "rsync" {
+  backend = "apt"
+}
+package "fail2ban" {
+  backend     = "apt"
+  description = "podstawowa ochrona SSH przed brute-force z domyślną konfiguracją"
+}
+package "unattended-upgrades" {
+  backend     = "apt"
+  description = "automatyczne instalowanie łatek bezpieczeństwa -- domyślnie włączone na serwerze"
+}
+
+# UWAGA: celowo BRAK: firefox/pipewire/pulseaudio/fontconfig/mesa/
+# xorg-*/wayland-* i jakichkolwiek zależności DE -- to jest CAŁY sens tej
+# edycji. Kontrast z modules/core/package.list (edycja desktopowa), który
+# zakłada, że użytkownik zainstaluje środowisko graficzne przez instalator.
