@@ -1,0 +1,148 @@
+package "cr" {
+  backend     = "own"
+  description = "cr (mkdir) -- tworzenie katalogów"
+}
+package "dl" {
+  backend     = "own"
+  description = "dl (rm z koszem) -- usuwanie plików/katalogów"
+}
+package "mk" {
+  backend     = "own"
+  description = "mk (touch) -- tworzenie plików / aktualizacja czasu"
+}
+package "ow" {
+  backend     = "own"
+  description = "ow (chown) -- zmiana właściciela"
+}
+package "gr" {
+  backend     = "own"
+  description = "gr (chgrp) -- zmiana grupy"
+}
+package "pm" {
+  backend     = "own"
+  description = "pm (chmod) -- zmiana uprawnień"
+}
+package "rm" {
+  backend     = "own"
+  description = "rm (mv) -- przenoszenie / zmiana nazwy"
+}
+package "echo" {
+  backend     = "own"
+  description = "echo -- wypisywanie tekstu"
+}
+package "sp" {
+  backend     = "own"
+  description = "sp (ls) -- listowanie katalogów"
+}
+package "kp" {
+  backend     = "own"
+  description = "kp (cp) -- kopiowanie plików/katalogów"
+}
+package "wp" {
+  backend     = "own"
+  description = "wp (cat) -- wypisywanie zawartości plików"
+}
+package "sz" {
+  backend     = "own"
+  description = "sz (grep) -- wyszukiwanie w tekście"
+}
+package "zn" {
+  backend     = "own"
+  description = "zn (find) -- wyszukiwanie plików"
+}
+package "lb" {
+  backend     = "own"
+  description = "lb (wc) -- liczenie linii/słów/bajtów"
+}
+package "wz" {
+  backend     = "own"
+  description = "wz (ln) -- dowiązania twarde i symboliczne"
+}
+package "pr" {
+  backend     = "own"
+  description = "pr (ps) -- listowanie procesów"
+}
+package "df" {
+  backend     = "own"
+  description = "df -- zajętość miejsca na dyskach"
+}
+package "du" {
+  backend     = "own"
+  description = "du -- zajętość katalogów"
+}
+package "zb" {
+  backend     = "own"
+  description = "zb (kill) -- wysyłanie sygnałów do procesów"
+}
+package "fr" {
+  backend     = "own"
+  description = "fr (head/tail) -- podgląd początku/końca pliku"
+}
+package "so" {
+  backend     = "own"
+  description = "so (sort) -- sortowanie linii"
+}
+package "un" {
+  backend     = "own"
+  description = "un (uniq) -- usuwanie sąsiadujących duplikatów linii"
+}
+package "ar" {
+  backend     = "own"
+  description = "ar (tar) -- archiwizacja (ustar + gzip)"
+}
+package "gdz" {
+  backend     = "own"
+  description = "gdz (which) -- lokalizacja polecenia w PATH"
+}
+package "en" {
+  backend     = "own"
+  description = "en (env) -- zmienne środowiskowe"
+}
+package "id" {
+  backend     = "own"
+  description = "id -- UID/GID z rozwiązywaniem nazw"
+}
+package "kt" {
+  backend     = "own"
+  description = "kt (whoami) -- nazwa bieżącego użytkownika"
+}
+package "hn" {
+  backend     = "own"
+  description = "hn (hostname) -- odczyt nazwy hosta"
+}
+package "ro" {
+  backend     = "own"
+  description = "ro (diff) -- porównywanie plików tekstowych"
+}
+package "xa" {
+  backend     = "own"
+  description = "xa (xargs) -- budowanie/uruchamianie poleceń z stdin"
+}
+package "zdb" {
+  backend     = "own"
+  description = "zdb (gdb) -- debugger ptrace(2) z symbolami ELF"
+}
+package "pf" {
+  backend     = "own"
+  description = "pf (printf) -- formatowane wypisywanie"
+}
+package "wm" {
+  backend     = "own"
+  description = "wm (free) -- zajętość RAM/swap"
+}
+package "up" {
+  backend     = "own"
+  description = "up (uptime) -- czas działania i obciążenie systemu"
+}
+package "ni" {
+  backend     = "own"
+  description = "ni (nice) -- uruchomienie polecenia ze zmienionym priorytetem"
+}
+package "about" {
+  backend     = "own"
+  description = "about (uname) -- informacje o systemie"
+}
+package "zesh" {
+  backend     = "own"
+  description = "zesh (bash) -- domyślna powłoka w profilu \"zenit\""
+}
