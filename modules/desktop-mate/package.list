@@ -1,0 +1,4 @@
+package "zenit-desktop-mate" {
+  backend     = "own"
+  description = "PLACEHOLDER -- metapakiet MATE, jeszcze bez pełnego zestawu pakietów środowiska"
+}
