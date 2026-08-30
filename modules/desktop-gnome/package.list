@@ -1,4 +1,85 @@
+# --- GNOME -- pełny zestaw pakietów środowiska (backend: apt) ---
+#
+# v0.5: nie jest już samym metapakietem "own" bez treści -- GNOME (i
+# reszta modules/desktop-*/) trafia teraz do zpm jako zestaw prawdziwych
+# pakietów Debiana (distro.base = "self" -> default_backend = "apt",
+# patrz distro.hcl), tak samo jak modules/core/package.list. Metapakiet
+# "zenit-desktop-gnome" (backend own) zostaje jako WYGODNY alias dla
+# instalatora (installerpkg/executor.nim::desktopMetaPackage) -- ale
+# faktyczny zestaw pakietów, który on rozwija, jest teraz jawnie
+# wymieniony tutaj, nie ukryty w zewnętrznym own-repository.json.
 package "zenit-desktop-gnome" {
   backend     = "own"
-  description = "Metapakiet GNOME -- rozwijany przez zpm na pełny zestaw (gnome-shell, mutter, gdm, nautilus, ...)"
+  description = "Metapakiet GNOME dla instalatora -- rozwija się na pakiety poniżej"
+}
+
+# --- sesja / kompozytor / menedżer logowania ---
+package "gnome-shell" {
+  backend     = "apt"
+  description = "kompozytor i powłoka GNOME (Mutter + GNOME Shell)"
+}
+package "gdm3" {
+  backend     = "apt"
+  description = "GNOME Display Manager -- ekran logowania"
+}
+package "gnome-session" {
+  backend = "apt"
+}
+package "gnome-settings-daemon" {
+  backend = "apt"
+}
+
+# --- podstawowe aplikacje / narzędzia systemowe ---
+package "nautilus" {
+  backend     = "apt"
+  description = "menedżer plików (Files)"
+}
+package "gnome-terminal" {
+  backend = "apt"
+}
+package "gnome-control-center" {
+  backend     = "apt"
+  description = "Ustawienia systemowe"
+}
+package "gnome-text-editor" {
+  backend = "apt"
+}
+package "gnome-software" {
+  backend     = "apt"
+  description = "centrum oprogramowania (obsługa Flatpak)"
+}
+package "gnome-tweaks" {
+  backend = "apt"
+}
+package "gnome-shell-extension-prefs" {
+  backend = "apt"
+}
+
+# --- integracja sprzętowa / systemowa ---
+package "network-manager-gnome" {
+  backend = "apt"
+}
+package "gvfs-backends" {
+  backend     = "apt"
+  description = "montowanie MTP/smb/sftp/... w Nautilusie"
+}
+package "xdg-desktop-portal-gnome" {
+  backend = "apt"
+}
+package "xdg-user-dirs-gtk" {
+  backend = "apt"
+}
+package "fonts-cantarell" {
+  backend = "apt"
+}
+
+# --- audio (PipeWire -- domyślne w nowszym GNOME) ---
+package "pipewire" {
+  backend = "apt"
+}
+package "pipewire-pulse" {
+  backend = "apt"
+}
+package "wireplumber" {
+  backend = "apt"
 }
