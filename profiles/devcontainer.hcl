@@ -40,16 +40,3 @@ workflow {
   triggers    = ["push", "schedule"]
   matrix_arch = ["x86_64"]
 }
-
-tools {
-  auto_fetch    = true
-  zpm_url       = "https://github.com/Zenit-Linux/zpm/releases/download/v0.1/zpm"
-}
-
-# Brak bloku `toolset {}` -- devcontainer to obraz aplikacyjny nad
-# istniejącym jądrem hosta (patrz komentarz w modules/devcontainer/
-# package.list), wybór GNU-vs-Zenit coreutils nie ma tu zastosowania;
-# `zlb` domyślnie przyjmuje profil "gnu" i tak, ale moduły toolset-*/
-# nie są w `modules.include`, więc `withToolset`/`resolveIncludeModsWithToolset`
-# jest tu no-opem z definicji (brak katalogów toolset-*/ w tym profilu
-# nie jest błędem -- patrz zlbpkg/rootfs.nim::resolveIncludeModsWithToolset).
