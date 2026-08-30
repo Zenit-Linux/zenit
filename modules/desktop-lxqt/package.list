@@ -1,4 +1,88 @@
+# --- LXQt -- pełny zestaw pakietów środowiska (backend: apt) ---
+# v0.5: usunięty PLACEHOLDER, patrz uwaga w modules/desktop-gnome/package.list.
 package "zenit-desktop-lxqt" {
   backend     = "own"
-  description = "PLACEHOLDER -- metapakiet LXQt, jeszcze bez pełnego zestawu pakietów środowiska"
+  description = "Metapakiet LXQt dla instalatora -- rozwija się na pakiety poniżej"
+}
+
+# --- sesja / kompozytor / menedżer logowania ---
+package "lxqt-session" {
+  backend = "apt"
+}
+package "lxqt-panel" {
+  backend = "apt"
+}
+package "openbox" {
+  backend     = "apt"
+  description = "domyślny menedżer okien LXQt (LXQt nie ma własnego kompozytora)"
+}
+package "sddm" {
+  backend     = "apt"
+  description = "menedżer logowania -- lekki, dobrze pasuje do lekkiego LXQt"
+}
+package "lxqt-config" {
+  backend = "apt"
+}
+package "lxqt-globalkeys" {
+  backend = "apt"
+}
+package "lxqt-policykit" {
+  backend = "apt"
+}
+package "lxqt-notificationd" {
+  backend = "apt"
+}
+package "lxqt-powermanagement" {
+  backend = "apt"
+}
+
+# --- podstawowe aplikacje ---
+package "pcmanfm-qt" {
+  backend     = "apt"
+  description = "menedżer plików"
+}
+package "qterminal" {
+  backend = "apt"
+}
+package "featherpad" {
+  backend     = "apt"
+  description = "prosty edytor tekstu"
+}
+package "lximage-qt" {
+  backend     = "apt"
+  description = "przeglądarka obrazów"
+}
+package "xarchiver" {
+  backend     = "apt"
+  description = "archiwizator (zip/tar/...)"
+}
+package "screengrab" {
+  backend     = "apt"
+  description = "zrzuty ekranu"
+}
+
+# --- integracja sprzętowa / systemowa ---
+package "network-manager-qt" {
+  backend = "apt"
+}
+package "pavucontrol-qt" {
+  backend     = "apt"
+  description = "mikser głośności"
+}
+package "gvfs-backends" {
+  backend = "apt"
+}
+package "lxqt-sudo" {
+  backend = "apt"
+}
+
+# --- audio (PipeWire) ---
+package "pipewire" {
+  backend = "apt"
+}
+package "pipewire-pulse" {
+  backend = "apt"
+}
+package "wireplumber" {
+  backend = "apt"
 }
