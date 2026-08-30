@@ -1,4 +1,99 @@
+# --- KDE Plasma -- pełny zestaw pakietów środowiska (backend: apt) ---
+# v0.5: patrz uwaga na górze modules/desktop-gnome/package.list --
+# ten sam schemat (metapakiet "own" jako alias dla instalatora + jawny
+# zestaw apt poniżej) stosuje się do wszystkich modules/desktop-*/.
 package "zenit-desktop-plasma" {
   backend     = "own"
-  description = "Metapakiet KDE Plasma -- rozwijany przez zpm na pełny zestaw (plasma-desktop, sddm, dolphin, konsole, ...)"
+  description = "Metapakiet KDE Plasma dla instalatora -- rozwija się na pakiety poniżej"
+}
+
+# --- sesja / kompozytor / menedżer logowania ---
+package "plasma-desktop" {
+  backend     = "apt"
+  description = "powłoka Plasma (panel, pulpit, menu K)"
+}
+package "plasma-workspace" {
+  backend = "apt"
+}
+package "sddm" {
+  backend     = "apt"
+  description = "Simple Desktop Display Manager -- ekran logowania"
+}
+package "kwin-x11" {
+  backend = "apt"
+}
+
+# --- podstawowe aplikacje ---
+package "dolphin" {
+  backend     = "apt"
+  description = "menedżer plików"
+}
+package "konsole" {
+  backend = "apt"
+}
+package "kate" {
+  backend = "apt"
+}
+package "systemsettings" {
+  backend = "apt"
+}
+package "plasma-systemmonitor" {
+  backend = "apt"
+}
+package "kscreen" {
+  backend     = "apt"
+  description = "zarządzanie monitorami/rozdzielczością"
+}
+package "spectacle" {
+  backend     = "apt"
+  description = "zrzuty ekranu"
+}
+package "ark" {
+  backend     = "apt"
+  description = "archiwizator (zip/tar/...)"
+}
+package "gwenview" {
+  backend     = "apt"
+  description = "przeglądarka obrazów"
+}
+package "okular" {
+  backend     = "apt"
+  description = "przeglądarka dokumentów/PDF"
+}
+package "discover" {
+  backend     = "apt"
+  description = "centrum oprogramowania Plasma (obsługa Flatpak)"
+}
+
+# --- integracja sprzętowa / systemowa ---
+package "plasma-nm" {
+  backend     = "apt"
+  description = "applet NetworkManager dla Plasma"
+}
+package "plasma-pa" {
+  backend     = "apt"
+  description = "applet głośności/audio dla Plasma"
+}
+package "kde-config-sddm" {
+  backend = "apt"
+}
+package "xdg-desktop-portal-kde" {
+  backend = "apt"
+}
+package "kwallet-pam" {
+  backend = "apt"
+}
+package "print-manager" {
+  backend = "apt"
+}
+
+# --- audio (PipeWire) ---
+package "pipewire" {
+  backend = "apt"
+}
+package "pipewire-pulse" {
+  backend = "apt"
+}
+package "wireplumber" {
+  backend = "apt"
 }
