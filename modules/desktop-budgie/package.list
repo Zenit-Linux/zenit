@@ -1,4 +1,72 @@
+# --- Budgie -- pełny zestaw pakietów środowiska (backend: apt) ---
+# v0.5: usunięty PLACEHOLDER, patrz uwaga w modules/desktop-gnome/package.list.
+#
+# Budgie korzysta pod spodem z części stosu GNOME (GSettings/GTK,
+# Nautilus jako menedżer plików, PipeWire jak reszta desktopów w tym
+# repo) -- stąd część pakietów pokrywa się z modules/desktop-gnome/.
 package "zenit-desktop-budgie" {
   backend     = "own"
-  description = "PLACEHOLDER -- metapakiet Budgie, jeszcze bez pełnego zestawu pakietów środowiska"
+  description = "Metapakiet Budgie dla instalatora -- rozwija się na pakiety poniżej"
+}
+
+# --- sesja / panel / menedżer logowania ---
+package "budgie-desktop" {
+  backend     = "apt"
+  description = "powłoka Budgie (panel, Raven, menu)"
+}
+package "budgie-desktop-environment" {
+  backend     = "apt"
+  description = "metapakiet górnego poziomu dystrybucji Budgie (dociąga resztę zestawu)"
+}
+package "lightdm" {
+  backend = "apt"
+}
+package "lightdm-gtk-greeter" {
+  backend = "apt"
+}
+package "budgie-screensaver" {
+  backend = "apt"
+}
+
+# --- podstawowe aplikacje ---
+package "nautilus" {
+  backend     = "apt"
+  description = "menedżer plików (dziedziczony ze stosu GNOME)"
+}
+package "gnome-terminal" {
+  backend = "apt"
+}
+package "gnome-text-editor" {
+  backend = "apt"
+}
+package "gnome-control-center" {
+  backend = "apt"
+}
+package "gnome-screenshot" {
+  backend = "apt"
+}
+
+# --- integracja sprzętowa / systemowa ---
+package "network-manager-gnome" {
+  backend = "apt"
+}
+package "gvfs-backends" {
+  backend = "apt"
+}
+package "xdg-desktop-portal-gnome" {
+  backend = "apt"
+}
+package "fonts-cantarell" {
+  backend = "apt"
+}
+
+# --- audio (PipeWire) ---
+package "pipewire" {
+  backend = "apt"
+}
+package "pipewire-pulse" {
+  backend = "apt"
+}
+package "wireplumber" {
+  backend = "apt"
 }
