@@ -1,0 +1,4 @@
+package "zenit-desktop-enlightenment" {
+  backend     = "own"
+  description = "PLACEHOLDER -- metapakiet Enlightenment, jeszcze bez pełnego zestawu pakietów środowiska"
+}
