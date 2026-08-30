@@ -1,4 +1,99 @@
+# --- Xfce -- pełny zestaw pakietów środowiska (backend: apt) ---
+# v0.5: usunięty PLACEHOLDER, patrz uwaga w modules/desktop-gnome/package.list.
 package "zenit-desktop-xfce" {
   backend     = "own"
-  description = "PLACEHOLDER -- metapakiet Xfce, jeszcze bez pełnego zestawu pakietów środowiska"
+  description = "Metapakiet Xfce dla instalatora -- rozwija się na pakiety poniżej"
+}
+
+# --- sesja / kompozytor / menedżer logowania ---
+package "xfce4-session" {
+  backend = "apt"
+}
+package "xfwm4" {
+  backend     = "apt"
+  description = "menedżer okien Xfce"
+}
+package "xfdesktop4" {
+  backend = "apt"
+}
+package "xfce4-panel" {
+  backend = "apt"
+}
+package "lightdm" {
+  backend     = "apt"
+  description = "menedżer logowania -- lekki, dobrze pasuje do lekkiego Xfce"
+}
+package "lightdm-gtk-greeter" {
+  backend = "apt"
+}
+
+# --- podstawowe aplikacje ---
+package "thunar" {
+  backend     = "apt"
+  description = "menedżer plików"
+}
+package "thunar-volman" {
+  backend = "apt"
+}
+package "xfce4-terminal" {
+  backend = "apt"
+}
+package "xfce4-appfinder" {
+  backend = "apt"
+}
+package "xfce4-settings" {
+  backend = "apt"
+}
+package "xfce4-power-manager" {
+  backend = "apt"
+}
+package "xfce4-notifyd" {
+  backend = "apt"
+}
+package "xfce4-screenshooter" {
+  backend = "apt"
+}
+package "mousepad" {
+  backend     = "apt"
+  description = "prosty edytor tekstu"
+}
+package "ristretto" {
+  backend     = "apt"
+  description = "przeglądarka obrazów"
+}
+package "xarchiver" {
+  backend     = "apt"
+  description = "archiwizator (zip/tar/...)"
+}
+
+# --- praktyczne dodatki (goodies) ---
+package "xfce4-taskmanager" {
+  backend = "apt"
+}
+package "xfce4-whiskermenu-plugin" {
+  backend     = "apt"
+  description = "wygodniejsze menu aplikacji (zamiennik domyślnego)"
+}
+
+# --- integracja sprzętowa / systemowa ---
+package "network-manager-gnome" {
+  backend     = "apt"
+  description = "applet NetworkManager (nm-applet) dla Xfce"
+}
+package "gvfs-backends" {
+  backend = "apt"
+}
+package "xfce4-pulseaudio-plugin" {
+  backend = "apt"
+}
+
+# --- audio (PipeWire) ---
+package "pipewire" {
+  backend = "apt"
+}
+package "pipewire-pulse" {
+  backend = "apt"
+}
+package "wireplumber" {
+  backend = "apt"
 }
