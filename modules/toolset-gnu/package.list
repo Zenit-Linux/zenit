@@ -1,0 +1,33 @@
+package "coreutils" {
+  backend     = "apt"
+  description = "cp/mv/rm/ls/cat/... -- klasyczne narzędzia GNU (profil toolset = gnu)"
+}
+package "util-linux" {
+  backend = "apt"
+}
+package "findutils" {
+  backend     = "apt"
+  description = "find/xargs (GNU)"
+}
+package "grep" {
+  backend = "apt"
+}
+package "sed" {
+  backend = "apt"
+}
+package "gawk" {
+  backend = "apt"
+}
+package "tar" {
+  backend = "apt"
+}
+package "diffutils" {
+  backend = "apt"
+}
+package "less" {
+  backend = "apt"
+}
+package "procps" {
+  backend     = "apt"
+  description = "ps/free/uptime/kill (GNU/procps-ng)"
+}
