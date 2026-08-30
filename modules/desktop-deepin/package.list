@@ -1,4 +1,84 @@
+# --- Deepin (DDE) -- pełny zestaw pakietów środowiska (backend: apt) ---
+# v0.5: usunięty PLACEHOLDER, patrz uwaga w modules/desktop-gnome/package.list.
+#
+# Deepin Desktop Environment tak samo jak COSMIC nie jest w archiwum
+# Debiana -- pakiety poniżej pochodzą z projektu "Debian Deepin Desktop
+# Environment" (community-packages.deepin.com), stąd
+# `variant = "deepin-community"` (patrz `repo "deepin-community"` w
+# keys/default.hcl -- musi być dołożone jako dodatkowe źródło apt).
 package "zenit-desktop-deepin" {
   backend     = "own"
-  description = "PLACEHOLDER -- metapakiet Deepin (DDE), jeszcze bez pełnego zestawu pakietów środowiska"
+  description = "Metapakiet Deepin (DDE) dla instalatora -- rozwija się na pakiety poniżej"
+}
+
+# --- sesja / kompozytor / menedżer logowania ---
+package "dde" {
+  backend     = "apt"
+  variant     = "deepin-community"
+  description = "metapakiet sesji Deepin Desktop Environment"
+}
+package "dde-session-ui" {
+  backend = "apt"
+  variant = "deepin-community"
+}
+package "dde-dock" {
+  backend     = "apt"
+  variant     = "deepin-community"
+  description = "dok/panel Deepin"
+}
+package "dde-launcher" {
+  backend = "apt"
+  variant = "deepin-community"
+}
+package "lightdm-deepin-greeter" {
+  backend     = "apt"
+  variant     = "deepin-community"
+  description = "ekran logowania w stylu Deepin (nakładka na lightdm)"
+}
+
+# --- podstawowe aplikacje ---
+package "dde-file-manager" {
+  backend     = "apt"
+  variant     = "deepin-community"
+  description = "menedżer plików"
+}
+package "deepin-terminal" {
+  backend = "apt"
+  variant = "deepin-community"
+}
+package "deepin-system-monitor" {
+  backend = "apt"
+  variant = "deepin-community"
+}
+package "deepin-screenshot" {
+  backend = "apt"
+  variant = "deepin-community"
+}
+package "deepin-image-viewer" {
+  backend = "apt"
+  variant = "deepin-community"
+}
+
+# --- integracja sprzętowa / systemowa ---
+package "dde-control-center" {
+  backend = "apt"
+  variant = "deepin-community"
+}
+package "dde-network-utils" {
+  backend = "apt"
+  variant = "deepin-community"
+}
+package "gvfs-backends" {
+  backend = "apt"
+}
+
+# --- audio (PipeWire) ---
+package "pipewire" {
+  backend = "apt"
+}
+package "pipewire-pulse" {
+  backend = "apt"
+}
+package "wireplumber" {
+  backend = "apt"
 }
