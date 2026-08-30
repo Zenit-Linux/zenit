@@ -1,0 +1,4 @@
+package "zenit-desktop-zde" {
+  backend     = "own"
+  description = "PLACEHOLDER -- ZDE (Zenit Desktop Environment), planowane własne środowisko graficzne Zenit, jeszcze niezaimplementowane"
+}
