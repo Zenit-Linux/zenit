@@ -1,0 +1,4 @@
+package "zenit-desktop-lxqt" {
+  backend     = "own"
+  description = "PLACEHOLDER -- metapakiet LXQt, jeszcze bez pełnego zestawu pakietów środowiska"
+}
