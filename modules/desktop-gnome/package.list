@@ -1,0 +1,4 @@
+package "zenit-desktop-gnome" {
+  backend     = "own"
+  description = "Metapakiet GNOME -- rozwijany przez zpm na pełny zestaw (gnome-shell, mutter, gdm, nautilus, ...)"
+}
