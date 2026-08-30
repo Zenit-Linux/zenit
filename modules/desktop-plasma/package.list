@@ -1,0 +1,4 @@
+package "zenit-desktop-plasma" {
+  backend     = "own"
+  description = "Metapakiet KDE Plasma -- rozwijany przez zpm na pełny zestaw (plasma-desktop, sddm, dolphin, konsole, ...)"
+}
