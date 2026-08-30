@@ -1,0 +1,4 @@
+package "zenit-desktop-cosmic" {
+  backend     = "own"
+  description = "PLACEHOLDER -- metapakiet COSMIC, jeszcze bez pełnego zestawu pakietów środowiska"
+}
