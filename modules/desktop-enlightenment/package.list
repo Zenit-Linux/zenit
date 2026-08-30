@@ -1,4 +1,55 @@
+# --- Enlightenment (E) -- pełny zestaw pakietów środowiska (backend: apt) ---
+# v0.5: usunięty PLACEHOLDER, patrz uwaga w modules/desktop-gnome/package.list.
 package "zenit-desktop-enlightenment" {
   backend     = "own"
-  description = "PLACEHOLDER -- metapakiet Enlightenment, jeszcze bez pełnego zestawu pakietów środowiska"
+  description = "Metapakiet Enlightenment dla instalatora -- rozwija się na pakiety poniżej"
+}
+
+# --- sesja / kompozytor / menedżer logowania ---
+package "enlightenment" {
+  backend     = "apt"
+  description = "kompozytor, menedżer okien i powłoka E w jednym (własny plik/menedżer wbudowany)"
+}
+package "lightdm" {
+  backend = "apt"
+}
+package "lightdm-gtk-greeter" {
+  backend = "apt"
+}
+
+# --- podstawowe aplikacje ---
+package "terminology" {
+  backend     = "apt"
+  description = "terminal E"
+}
+package "ephoto" {
+  backend     = "apt"
+  description = "przeglądarka/organizator obrazów E"
+}
+package "rage" {
+  backend     = "apt"
+  description = "odtwarzacz multimediów E"
+}
+
+# --- integracja sprzętowa / systemowa ---
+package "connman" {
+  backend     = "apt"
+  description = "menedżer sieci -- domyślnie zintegrowany z appletem sieciowym E (econnman)"
+}
+package "econnman" {
+  backend = "apt"
+}
+package "gvfs-backends" {
+  backend = "apt"
+}
+
+# --- audio (PipeWire) ---
+package "pipewire" {
+  backend = "apt"
+}
+package "pipewire-pulse" {
+  backend = "apt"
+}
+package "wireplumber" {
+  backend = "apt"
 }
