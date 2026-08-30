@@ -1,0 +1,4 @@
+package "zenit-desktop-deepin" {
+  backend     = "own"
+  description = "PLACEHOLDER -- metapakiet Deepin (DDE), jeszcze bez pełnego zestawu pakietów środowiska"
+}
