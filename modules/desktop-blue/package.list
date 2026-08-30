@@ -1,0 +1,4 @@
+package "zenit-desktop-blue" {
+  backend     = "own"
+  description = "PLACEHOLDER -- Blue Environment, planowane własne środowisko graficzne Zenit, jeszcze niezaimplementowane"
+}
