@@ -52,8 +52,3 @@ workflow {
   triggers    = ["push", "tag"]
   matrix_arch = ["x86_64", "aarch64"]
 }
-
-tools {
-  auto_fetch    = true
-  zpm_url       = "https://github.com/Zenit-Linux/zpm/releases/download/v0.1/zpm"
-}
