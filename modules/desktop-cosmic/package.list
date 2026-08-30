@@ -1,4 +1,96 @@
+# --- COSMIC (System76) -- pełny zestaw pakietów środowiska (backend: apt) ---
+# v0.5: usunięty PLACEHOLDER, patrz uwaga w modules/desktop-gnome/package.list.
+#
+# COSMIC (Rust, kompozytor Wayland) NIE JEST jeszcze w archiwum Debiana --
+# pakiety poniżej pochodzą z repozytorium apt System76/Pop!_OS (stąd
+# `variant = "pop-os"`, ta sama konwencja co `variant = "debian.testing"`
+# w modules/core/package.list dla pakietów spoza domyślnego apt bazowego).
+# Zobacz `repo "pop-os-cosmic"` w keys/default.hcl -- musi być dołożone
+# jako dodatkowe źródło apt, zanim `zpm install` cokolwiek z tego modułu
+# zadziała; bez tego repo te pakiety po prostu nie istnieją.
 package "zenit-desktop-cosmic" {
   backend     = "own"
-  description = "PLACEHOLDER -- metapakiet COSMIC, jeszcze bez pełnego zestawu pakietów środowiska"
+  description = "Metapakiet COSMIC dla instalatora -- rozwija się na pakiety poniżej"
+}
+
+# --- sesja / kompozytor / menedżer logowania ---
+package "cosmic-session" {
+  backend     = "apt"
+  variant     = "pop-os"
+  description = "menedżer sesji COSMIC"
+}
+package "cosmic-comp" {
+  backend     = "apt"
+  variant     = "pop-os"
+  description = "kompozytor Wayland COSMIC (Smithay)"
+}
+package "cosmic-panel" {
+  backend = "apt"
+  variant = "pop-os"
+}
+package "cosmic-greeter" {
+  backend     = "apt"
+  variant     = "pop-os"
+  description = "ekran logowania COSMIC"
+}
+package "cosmic-launcher" {
+  backend = "apt"
+  variant = "pop-os"
+}
+
+# --- podstawowe aplikacje ---
+package "cosmic-files" {
+  backend     = "apt"
+  variant     = "pop-os"
+  description = "menedżer plików"
+}
+package "cosmic-term" {
+  backend = "apt"
+  variant = "pop-os"
+}
+package "cosmic-edit" {
+  backend     = "apt"
+  variant     = "pop-os"
+  description = "prosty edytor tekstu"
+}
+package "cosmic-store" {
+  backend     = "apt"
+  variant     = "pop-os"
+  description = "centrum oprogramowania (obsługa Flatpak)"
+}
+package "cosmic-screenshot" {
+  backend = "apt"
+  variant = "pop-os"
+}
+
+# --- integracja sprzętowa / systemowa ---
+package "cosmic-settings" {
+  backend = "apt"
+  variant = "pop-os"
+}
+package "cosmic-bg" {
+  backend     = "apt"
+  variant     = "pop-os"
+  description = "tapeta / tło pulpitu"
+}
+package "cosmic-notifications" {
+  backend = "apt"
+  variant = "pop-os"
+}
+package "network-manager-gnome" {
+  backend = "apt"
+}
+package "gvfs-backends" {
+  backend = "apt"
+}
+
+# --- audio (PipeWire) ---
+package "pipewire" {
+  backend = "apt"
+}
+package "pipewire-pulse" {
+  backend = "apt"
+}
+package "wireplumber" {
+  backend = "apt"
 }
