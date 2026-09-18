@@ -1,5 +1,10 @@
 name: Build standard rootfs
 
+# "standard" w .github/workflows/menu.yml -- zwykly system (NIE
+# atomic/immutable): zlb build rootfs spakowany jako tar.xz. Backend
+# "atomic - oci" (build-oci.yml) i przyszly "atomic - fasttree"
+# (build-atomic-fasttree.yml) to odrebne, niemutowalne warianty.
+
 on:
   push:
     branches: ["main"]
@@ -7,6 +12,19 @@ on:
     inputs:
       arch:
         description: "Architektura (puste = wszystkie z distro.hcl)"
+        required: false
+        default: ""
+      zlb_source:
+        description: "Skad wziac zlb: latest-release | version | source"
+        required: false
+        type: choice
+        default: "latest-release"
+        options:
+          - latest-release
+          - version
+          - source
+      zlb_version:
+        description: "Konkretna wersja zlb (np. v0.1) -- tylko gdy zlb_source=version"
         required: false
         default: ""
 
@@ -30,10 +48,11 @@ jobs:
         run: |
           sudo apt-get install -y janet || (curl -fsSL https://janet-lang.org/install.sh | sudo bash)
 
-      - name: Install zlb
-        run: |
-          curl -fsSL https://github.com/Zenit-Linux/zlb/releases/latest/download/zlb -o /usr/local/bin/zlb
-          chmod +x /usr/local/bin/zlb
+      - name: Zainstaluj zlb
+        uses: ./.github/actions/install-zlb
+        with:
+          mode: ${{ github.event.inputs.zlb_source || 'latest-release' }}
+          version: ${{ github.event.inputs.zlb_version || '' }}
 
       - name: Cache out/cache
         uses: actions/cache@v4
