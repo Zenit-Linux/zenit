@@ -55,8 +55,7 @@ jobs:
             qemu-user-static binfmt-support gnupg tar
 
       - name: Install janet
-        run: |
-          sudo apt-get install -y janet || (curl -fsSL https://janet-lang.org/install.sh | sudo bash)
+        uses: ./.github/actions/install-janet
 
       - name: Zainstaluj zlb
         uses: ./.github/actions/install-zlb
