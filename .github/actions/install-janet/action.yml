@@ -1,0 +1,58 @@
+name: "Zainstaluj Janet"
+description: >
+  Instaluje interpreter Janet (potrzebny do uruchamiania hookow modulow
+  modules/*/scripts/*.janet oraz do `janet build.janet` przy budowaniu
+  zlb/zpm ze zrodel -- patrz .github/actions/install-zlb).
+
+  NAPRAWIONE (v0.5): poprzednio kazdy workflow mial wklejone osobno
+  `sudo apt-get install -y janet || (curl -fsSL
+  https://janet-lang.org/install.sh | sudo bash)`, co bylo podwojnie
+  zepsute:
+    1. Pakiet 'janet' NIE ISTNIEJE w apt na obrazie ubuntu-latest (noble)
+       -- `apt-get install -y janet` zawsze konczyl sie
+       "E: Unable to locate package janet".
+    2. Fallback pod adresem https://janet-lang.org/install.sh ZWRACA 403
+       -- taki skrypt instalacyjny nigdy tam nie istnial, to byl zmyslony
+       URL. Fallback zawsze konczyl sie bledem.
+    3. W krokach `run:` bez `pipefail` (domyslny shell nie zawsze go wlacza
+       -- patrz logi CI) `apt-fail || (curl-fail | sudo bash)` i tak
+       konczylo sie kodem 0 (status pipe'a = status OSTATNIEJ komendy, a
+       `sudo bash` z pustym stdinem wychodzi 0), wiec krok "Install janet"
+       UDAWAL sukces, mimo ze Janet nigdy sie nie zainstalowal -- blad
+       ujawnial sie dopiero pozniej, przy pierwszym realnym uzyciu `janet`.
+
+  Nowe zachowanie: apt jako szybka sciezka (na wypadek obrazow, gdzie
+  pakiet faktycznie istnieje), a jesli po nim `janet` dalej nie ma na
+  PATH -- budowa ze zrodel oficjalnego repo janet-lang/janet (git clone
+  + make + make install, zgodnie z oficjalna instrukcja projektu:
+  https://janet-lang.org/docs/index.html). Krok koncowy jawnie
+  weryfikuje `janet -v`, wiec cichy "sukces" bez realnej instalacji nie
+  jest juz mozliwy.
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Janet: sprobuj z apt (szybka sciezka, moze nie istniec na tym obrazie)"
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y janet || true
+
+    - name: "Janet: zbuduj ze zrodel (janet-lang/janet), jesli apt nie dal binarki"
+      shell: bash
+      run: |
+        set -euo pipefail
+        if command -v janet >/dev/null 2>&1; then
+          echo "Janet juz dostepny (z apt): $(command -v janet)"
+          exit 0
+        fi
+        echo "Pakiet 'janet' niedostepny w apt na tym obrazie -- buduje ze zrodel janet-lang/janet"
+        sudo apt-get install -y build-essential
+        rm -rf "${{ runner.temp }}/janet-src"
+        git clone --depth 1 https://github.com/janet-lang/janet.git "${{ runner.temp }}/janet-src"
+        make -C "${{ runner.temp }}/janet-src" -j"$(nproc)"
+        sudo make -C "${{ runner.temp }}/janet-src" install
+
+    - name: "Janet: weryfikacja (twardy blad, jesli mimo wszystko brak)"
+      shell: bash
+      run: janet -v
