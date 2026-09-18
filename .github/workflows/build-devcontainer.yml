@@ -12,6 +12,14 @@ name: Build headless devcontainer (OCI)
 # Buduje z ALTERNATYWNEGO manifestu `devcontainer.hcl` (nie distro.hcl)
 # przez nową flagę `zlb build oci --manifest=devcontainer.hcl` (v0.3) --
 # patrz devcontainer.hcl i modules/devcontainer/package.list w tym repo.
+#
+# v0.4 -- to jest backend pozycji "container" w .github/workflows/menu.yml.
+# Dodano wybór architektury i źródła narzędzia zlb (spójnie z resztą
+# workflow'ów) oraz USUNIĘTO martwy krok "Zainstaluj Nim": ten krok nie
+# był tu do niczego potrzebny -- zlb było i tak pobierane jako gotowa
+# binarka (nie budowane ze źródeł), a Nim/nimble jest potrzebny WYŁĄCZNIE
+# gdy zlb_source="source" (patrz .github/actions/install-zlb, który sam
+# doinstalowuje Nim tylko w tym trybie).
 
 on:
   push:
@@ -20,7 +28,25 @@ on:
       - "devcontainer.hcl"
       - "modules/devcontainer/**"
       - ".github/workflows/build-devcontainer.yml"
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      arch:
+        description: "Architektura (puste = x86_64)"
+        required: false
+        default: ""
+      zlb_source:
+        description: "Skad wziac zlb: latest-release | version | source"
+        required: false
+        type: choice
+        default: "latest-release"
+        options:
+          - latest-release
+          - version
+          - source
+      zlb_version:
+        description: "Konkretna wersja zlb (np. v0.1) -- tylko gdy zlb_source=version"
+        required: false
+        default: ""
   schedule:
     # Cotygodniowy rebuild -- świeże pakiety apt/cargo bez czekania na
     # ręczny trigger (devcontainery są używane codziennie przez devów,
@@ -37,26 +63,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Zainstaluj Nim
-        uses: jiro4989/setup-nim-action@v2
-        with:
-          nim-version: "2.2.0"
-
       - name: Zależności systemowe budowania rootfs/OCI
         run: |
           sudo apt-get update
           sudo apt-get install -y debootstrap skopeo podman
 
-      - name: Pobierz zlb
+      - name: Zainstaluj Janet (wymagany do hookow modulow)
         run: |
-          curl -fsSL https://github.com/Zenit-Linux/zlb/releases/latest/download/zlb -o /usr/local/bin/zlb
-          chmod +x /usr/local/bin/zlb
+          sudo apt-get install -y janet || (curl -fsSL https://janet-lang.org/install.sh | sudo bash)
+
+      - name: Zainstaluj zlb
+        uses: ./.github/actions/install-zlb
+        with:
+          mode: ${{ github.event.inputs.zlb_source || 'latest-release' }}
+          version: ${{ github.event.inputs.zlb_version || '' }}
 
       - name: Waliduj devcontainer.hcl / package.list
         run: zlb validate --manifest=devcontainer.hcl
 
       - name: Buduj obraz OCI (headless devcontainer)
-        run: zlb build oci --manifest=devcontainer.hcl --arch x86_64
+        run: zlb build oci --manifest=devcontainer.hcl --arch ${{ github.event.inputs.arch || 'x86_64' }}
 
       - name: Zaloguj do ghcr.io
         if: github.event_name != 'pull_request'
