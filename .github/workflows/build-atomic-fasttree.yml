@@ -1,0 +1,45 @@
+name: Build atomic - FastTree (placeholder)
+
+# v0.4 -- PLACEHOLDER. "FastTree" ma byc w przyszlosci alternatywnym
+# backendem dla systemow atomic/immutable (obok "atomic - oci"), ale zlb
+# NIE MA jeszcze zadnej implementacji tego backendu (brak `zlb build
+# fasttree` w src/zlb.nim). Ten workflow istnieje wylacznie po to, zeby
+# pozycja "atomic - fasttree (placeholder)" w .github/workflows/menu.yml
+# mogla cos realnie odpalic bez bledu "workflow nie istnieje" -- w
+# srodku tylko jasny komunikat, zero prawdziwego builda.
+#
+# Kiedy zlb dostanie prawdziwy backend fasttree, ten plik nalezy
+# podmienic na rzeczywiste kroki budowania (analogicznie do
+# build-oci.yml), zachowujac te same inputy (arch/zlb_source/zlb_version)
+# dla spojnosci z reszta workflow'ow.
+
+on:
+  workflow_dispatch:
+    inputs:
+      arch:
+        description: "Architektura (puste = wszystkie z distro.hcl) -- na razie bez znaczenia"
+        required: false
+        default: ""
+      zlb_source:
+        description: "Skad wziac zlb: latest-release | version | source -- na razie bez znaczenia"
+        required: false
+        type: choice
+        default: "latest-release"
+        options:
+          - latest-release
+          - version
+          - source
+      zlb_version:
+        description: "Konkretna wersja zlb (np. v0.1) -- na razie bez znaczenia"
+        required: false
+        default: ""
+
+jobs:
+  placeholder:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Atomic - FastTree: backend jeszcze niezaimplementowany"
+        run: |
+          echo "::notice title=Atomic FastTree (placeholder)::Backend 'FastTree' dla systemow atomic jest na razie PLACEHOLDEREM -- zlb nie ma jeszcze zaimplementowanego 'zlb build fasttree'."
+          echo "Jesli potrzebujesz realnego buildu atomic juz teraz, uzyj 'atomic - oci' z build menu."
+          echo "Ta pozycja zostanie podpieta pod prawdziwy build, gdy backend fasttree powstanie w zlb."
