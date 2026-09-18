@@ -101,6 +101,24 @@ jobs:
             const arch = archChoice === "all" ? "" : archChoice;
 
             for (const wf of toRun) {
+              // GitHub automatycznie wylacza workflow po ~60 dniach braku
+              // aktywnosci w repo (albo ktos wylaczyl go recznie w zakladce
+              // Actions) -- wtedy createWorkflowDispatch konczy sie 422
+              // "Cannot trigger a 'workflow_dispatch' on a disabled workflow".
+              // Zamiast wymagac recznego kliku "Enable workflow" za kazdym
+              // razem, probujemy najpierw jawnie go wlaczyc -- enableWorkflow
+              // jest idempotentny (no-op, jesli juz jest wlaczony), wiec nie
+              // szkodzi wywolywac go zawsze.
+              try {
+                await github.rest.actions.enableWorkflow({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  workflow_id: wf,
+                });
+              } catch (e) {
+                console.log(`Nie udalo sie wlaczyc ${wf} (moze juz byl wlaczony albo nie istnieje): ${e.message}`);
+              }
+
               console.log(`Uruchamiam ${wf} (arch=${archChoice}, zlb_source=${zlbSource}, zlb_version=${zlbVersion || "-"})`);
               await github.rest.actions.createWorkflowDispatch({
                 owner: context.repo.owner,
