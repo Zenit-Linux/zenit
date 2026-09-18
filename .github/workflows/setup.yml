@@ -23,6 +23,15 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    env:
+      # NAPRAWIONE: 'needrestart' na obrazie ubuntu-latest (noble) potrafi po
+      # apt-get install wyskoczyc z INTERAKTYWNYM oknem "ktore uslugi
+      # zrestartowac?" i czekac na Enter, ktorego nikt nie nacisnie w CI --
+      # job wtedy wisi w nieskonczonosc zamiast zakonczyc sie bledem. Te dwie
+      # zmienne wylaczaja wszystkie interaktywne prompty apt/debconf/needrestart
+      # dla KAZDEGO kroku w tym jobie (w tym krokow z .github/actions/*).
+      DEBIAN_FRONTEND: noninteractive
+      NEEDRESTART_MODE: a
     steps:
       - uses: actions/checkout@v4
 
