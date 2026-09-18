@@ -4,7 +4,21 @@ on:
   push:
     branches: ["main"]
   pull_request:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      zlb_source:
+        description: "Skad wziac zlb: latest-release | version | source"
+        required: false
+        type: choice
+        default: "latest-release"
+        options:
+          - latest-release
+          - version
+          - source
+      zlb_version:
+        description: "Konkretna wersja zlb (np. v0.1) -- tylko gdy zlb_source=version"
+        required: false
+        default: ""
 
 jobs:
   validate:
@@ -17,10 +31,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y janet || (curl -fsSL https://janet-lang.org/install.sh | sudo bash)
 
-      - name: Install zlb
-        run: |
-          curl -fsSL https://github.com/Zenit-Linux/zlb/releases/latest/download/zlb -o /usr/local/bin/zlb
-          chmod +x /usr/local/bin/zlb
+      - name: Zainstaluj zlb
+        uses: ./.github/actions/install-zlb
+        with:
+          mode: ${{ github.event.inputs.zlb_source || 'latest-release' }}
+          version: ${{ github.event.inputs.zlb_version || '' }}
 
       - name: Validate distro.hcl
         run: zlb manifest validate
