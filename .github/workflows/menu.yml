@@ -39,6 +39,16 @@ on:
         required: false
         default: ""
 
+permissions:
+  # Domyslny GITHUB_TOKEN dostaje tylko contents/metadata/packages: read
+  # (patrz log builda: "GITHUB_TOKEN Permissions: Contents: read,
+  # Metadata: read, Packages: read"), a createWorkflowDispatch z REST API
+  # wymaga jawnie 'actions: write' -- bez tego bloku call konczyl sie
+  # 403 "Resource not accessible by integration" dla KAZDEGO workflow_id,
+  # jeszcze zanim doszlo do sprawdzania, czy plik istnieje.
+  actions: write
+  contents: read
+
 jobs:
   dispatch:
     runs-on: ubuntu-latest
