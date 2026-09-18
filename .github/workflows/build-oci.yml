@@ -1,9 +1,38 @@
-name: Build ISO
+name: Build OCI image (atomic - oci)
+
+# v0.4 -- NAPRAWIONE pomylenie plikow: ten workflow historycznie nazywal
+# sie "build-iso.yml", mimo ze jego kroki od zawsze budowaly obraz OCI
+# (zlb build oci), a plik "build-oci.yml" budowal ISO. Nazwy plikow zostaly
+# zamienione miejscami tak, zeby odpowiadaly rzeczywistej tresci -- patrz
+# build-iso.yml (teraz faktycznie buduje ISO).
+#
+# To jest backend "atomic - oci" z .github/workflows/menu.yml: system
+# atomic/immutable budowany jako warstwa OCI (docelowo montowana/bootowana
+# w sposob niemutowalny, w odroznieniu od "standard", ktory jest zwyklym,
+# nieimmutable rootfs -- patrz build-standard.yml).
 
 on:
   push:
     tags: ["v*"]
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      arch:
+        description: "Architektura (puste = wszystkie z distro.hcl)"
+        required: false
+        default: ""
+      zlb_source:
+        description: "Skad wziac zlb: latest-release | version | source"
+        required: false
+        type: choice
+        default: "latest-release"
+        options:
+          - latest-release
+          - version
+          - source
+      zlb_version:
+        description: "Konkretna wersja zlb (np. v0.1) -- tylko gdy zlb_source=version"
+        required: false
+        default: ""
 
 jobs:
   build:
@@ -19,17 +48,17 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y xorriso squashfs-tools grub-pc-bin grub-efi-amd64-bin \
-            qemu-user-static binfmt-support gnupg tar
+          sudo apt-get install -y squashfs-tools qemu-user-static binfmt-support gnupg tar skopeo
 
       - name: Install janet
         run: |
           sudo apt-get install -y janet || (curl -fsSL https://janet-lang.org/install.sh | sudo bash)
 
-      - name: Install zlb
-        run: |
-          curl -fsSL https://github.com/Zenit-Linux/zlb/releases/latest/download/zlb -o /usr/local/bin/zlb
-          chmod +x /usr/local/bin/zlb
+      - name: Zainstaluj zlb
+        uses: ./.github/actions/install-zlb
+        with:
+          mode: ${{ github.event.inputs.zlb_source || 'latest-release' }}
+          version: ${{ github.event.inputs.zlb_version || '' }}
 
       - name: Cache out/cache
         uses: actions/cache@v4
@@ -38,32 +67,28 @@ jobs:
           key: zlb-cache-${{ matrix.arch }}-${{ hashFiles('distro.hcl', 'modules/**') }}
           restore-keys: zlb-cache-${{ matrix.arch }}-
 
-      - name: Import release GPG key
-        if: ${{ secrets.ZENIT_GPG_PRIVATE_KEY != '' }}
-        env:
-          ZENIT_GPG_PRIVATE_KEY: ${{ secrets.ZENIT_GPG_PRIVATE_KEY }}
-        run: echo "$ZENIT_GPG_PRIVATE_KEY" | gpg --batch --import
-
       - name: zlb build rootfs
+        if: ${{ github.event.inputs.arch == '' || github.event.inputs.arch == matrix.arch }}
         run: zlb build rootfs --arch ${{ matrix.arch }}
 
-      - name: zlb build iso
-        run: zlb build iso --arch ${{ matrix.arch }}
+      - name: zlb build oci
+        if: ${{ github.event.inputs.arch == '' || github.event.inputs.arch == matrix.arch }}
+        run: zlb build oci --arch ${{ matrix.arch }}
+
+      - name: Log in to registry
+        if: ${{ secrets.REGISTRY_TOKEN != '' && (github.event.inputs.arch == '' || github.event.inputs.arch == matrix.arch) }}
+        run: echo "${{ secrets.REGISTRY_TOKEN }}" | skopeo login --username "${{ github.actor }}" --password-stdin ghcr.io
+
+      - name: Push OCI image
+        if: ${{ secrets.REGISTRY_TOKEN != '' && (github.event.inputs.arch == '' || github.event.inputs.arch == matrix.arch) }}
+        run: |
+          for d in out/oci/*/; do
+            skopeo copy "oci:${d%/}" "docker://ghcr.io/zenit-linux/zenit-linux:${{ matrix.arch }}-${{ github.ref_name }}"
+          done
 
       - name: Upload artifacts
+        if: ${{ github.event.inputs.arch == '' || github.event.inputs.arch == matrix.arch }}
         uses: actions/upload-artifact@v4
         with:
-          name: zenit-linux-iso-${{ matrix.arch }}
-          path: |
-            out/*.iso
-            out/*.sha256
-            out/*.asc
-
-      - name: Publish GitHub Release
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            out/*.iso
-            out/*.sha256
-            out/*.asc
+          name: zenit-linux-oci-${{ matrix.arch }}
+          path: out/oci/**
