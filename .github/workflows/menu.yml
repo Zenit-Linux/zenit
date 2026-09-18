@@ -7,14 +7,35 @@ on:
         description: "Co zbudować?"
         required: true
         type: choice
-        default: "iso"
+        default: "atomic - oci"
         options:
-          - iso
-          - oci
-          - standard
-          - all
+          - "atomic - oci"
+          - "atomic - fasttree (placeholder)"
+          - "standard (nieimmutable)"
+          - "container"
+          - "all"
       arch:
-        description: "Architektura (puste = wszystkie z distro.hcl)"
+        description: "Architektura"
+        required: true
+        type: choice
+        default: "all"
+        options:
+          - "all"
+          - "x86_64"
+          - "aarch64"
+      zlb_source:
+        description: "Skąd wziąć narzędzie zlb?"
+        required: true
+        type: choice
+        default: "najnowsza wersja (GitHub Releases)"
+        options:
+          - "najnowsza wersja (GitHub Releases)"
+          - "konkretna wersja (GitHub Releases)"
+          - "budowanie ze źródeł (git clone + janet build.janet)"
+      zlb_version:
+        description: >-
+          Konkretna wersja zlb (np. v0.1) -- używane TYLKO gdy zlb_source =
+          "konkretna wersja (GitHub Releases)"
         required: false
         default: ""
 
@@ -27,20 +48,59 @@ jobs:
         with:
           script: |
             const target = context.payload.inputs.target;
-            const arch = context.payload.inputs.arch || "";
+            const archChoice = context.payload.inputs.arch || "all";
+            const zlbSourceChoice = context.payload.inputs.zlb_source || "najnowsza wersja (GitHub Releases)";
+            const zlbVersion = context.payload.inputs.zlb_version || "";
+
+            // "atomic - oci"      -> zlb build oci (system atomic/immutable, warstwa OCI)
+            // "atomic - fasttree" -> placeholder, zlb nie ma jeszcze tego backendu
+            // "standard"          -> zlb build rootfs (zwykły system, NIE immutable)
+            // "container"         -> devcontainer OCI (bez środowiska graficznego, dla devów)
             const workflows = {
-              iso: "build-iso.yml",
-              oci: "build-oci.yml",
-              standard: "build-standard.yml",
+              "atomic - oci": ["build-oci.yml"],
+              "atomic - fasttree (placeholder)": ["build-atomic-fasttree.yml"],
+              "standard (nieimmutable)": ["build-standard.yml"],
+              "container": ["build-devcontainer.yml"],
             };
-            const toRun = target === "all" ? Object.values(workflows) : [workflows[target]];
+
+            const toRun = target === "all"
+              ? Object.values(workflows).flat()
+              : workflows[target];
+
+            if (!toRun) {
+              core.setFailed(`Nieznany target: ${target}`);
+              return;
+            }
+
+            // Mapowanie ładnych etykiet z menu na krótkie wartości, które
+            // rozumie composite action .github/actions/install-zlb (mode).
+            const zlbSourceMap = {
+              "najnowsza wersja (GitHub Releases)": "latest-release",
+              "konkretna wersja (GitHub Releases)": "version",
+              "budowanie ze źródeł (git clone + janet build.janet)": "source",
+            };
+            const zlbSource = zlbSourceMap[zlbSourceChoice] || "latest-release";
+
+            if (zlbSource === "version" && !zlbVersion) {
+              core.setFailed('zlb_source = "konkretna wersja" wymaga podania zlb_version (np. v0.1)');
+              return;
+            }
+
+            // "all" oznacza "wszystkie architektury z distro.hcl" -- w
+            // workflowach docelowych puste arch == wszystkie (tak jak dotąd).
+            const arch = archChoice === "all" ? "" : archChoice;
+
             for (const wf of toRun) {
-              console.log(`Uruchamiam ${wf} (arch=${arch || "wszystkie"})`);
+              console.log(`Uruchamiam ${wf} (arch=${archChoice}, zlb_source=${zlbSource}, zlb_version=${zlbVersion || "-"})`);
               await github.rest.actions.createWorkflowDispatch({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 workflow_id: wf,
                 ref: context.ref,
-                inputs: arch ? { arch } : {},
+                inputs: {
+                  arch,
+                  zlb_source: zlbSource,
+                  zlb_version: zlbVersion,
+                },
               });
             }
