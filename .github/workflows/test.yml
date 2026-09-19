@@ -55,7 +55,9 @@ jobs:
           restore-keys: zlb-cache-x86_64-
 
       - name: zlb build rootfs (smoke test)
-        run: zlb build rootfs --arch x86_64
+        # sudo wymagane -- patrz komentarz przy tym samym kroku w
+        # build-standard.yml ("Permission denied: /var/cache/zpm/").
+        run: sudo env "PATH=$PATH" zlb build rootfs --arch x86_64
 
       - name: Sanity-check rootfs contents
         run: |
