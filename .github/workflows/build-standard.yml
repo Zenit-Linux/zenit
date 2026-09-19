@@ -71,7 +71,15 @@ jobs:
 
       - name: zlb build rootfs
         if: ${{ github.event.inputs.arch == '' || github.event.inputs.arch == matrix.arch }}
-        run: zlb build rootfs --arch ${{ matrix.arch }}
+        # NAPRAWIONE: bez sudo `zlb build rootfs` pada na
+        # "Permission denied: /var/cache/zpm/" -- bootstrapping prawdziwego
+        # rootfs (backend apt w zpm) wymaga roota (zapis do systemowych
+        # katalogow cache/chroot/urzadzen), a domyslny uzytkownik 'runner'
+        # na hostowanych runnerach GitHuba nim nie jest. `env "PATH=$PATH"`
+        # zapewnia, ze sudo znajdzie `zlb` tam, gdzie zainstalowala je
+        # .github/actions/install-zlb (np. /usr/local/bin), niezaleznie od
+        # tego, czy sudo ma wlasny, okrojony secure_path.
+        run: sudo env "PATH=$PATH" zlb build rootfs --arch ${{ matrix.arch }}
 
       - name: Package rootfs tarball
         if: ${{ github.event.inputs.arch == '' || github.event.inputs.arch == matrix.arch }}
