@@ -100,6 +100,10 @@ jobs:
             // workflowach docelowych puste arch == wszystkie (tak jak dotąd).
             const arch = archChoice === "all" ? "" : archChoice;
 
+            // Pomocnicza funkcja: usypia na ms milisekund (github-script
+            // nie ma wbudowanego sleep -- Node'owy setTimeout w Promise).
+            const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
             for (const wf of toRun) {
               // GitHub automatycznie wylacza workflow po ~60 dniach braku
               // aktywnosci w repo (albo ktos wylaczyl go recznie w zakladce
@@ -109,14 +113,52 @@ jobs:
               // razem, probujemy najpierw jawnie go wlaczyc -- enableWorkflow
               // jest idempotentny (no-op, jesli juz jest wlaczony), wiec nie
               // szkodzi wywolywac go zawsze.
+              let wasDisabled = false;
               try {
-                await github.rest.actions.enableWorkflow({
+                const { data: wfInfoBefore } = await github.rest.actions.getWorkflow({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   workflow_id: wf,
                 });
+                wasDisabled = wfInfoBefore.state !== "active";
+                if (wasDisabled) {
+                  await github.rest.actions.enableWorkflow({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    workflow_id: wf,
+                  });
+                }
               } catch (e) {
-                console.log(`Nie udalo sie wlaczyc ${wf} (moze juz byl wlaczony albo nie istnieje): ${e.message}`);
+                console.log(`Nie udalo sie sprawdzic/wlaczyc ${wf}: ${e.message}`);
+              }
+
+              // NAPRAWIONE: enableWorkflow jest "eventually consistent" --
+              // odpalenie createWorkflowDispatch od razu po nim potrafi
+              // stworzyc run, ktory na zawsze utyka w statusie "Queued"
+              // (GitHub jeszcze nie "dogonil" wewnetrznie informacji, ze
+              // workflow jest juz aktywny). Zamiast na slepo czekac, po
+              // wlaczeniu odpytujemy getWorkflow w petli, az faktycznie
+              // potwierdzi state=="active" (max 5 prob co 2s), i dopiero
+              // wtedy robimy dispatch. Jesli workflow i tak juz byl
+              // aktywny, ten krok w ogole sie nie wykonuje (zero opoznienia).
+              if (wasDisabled) {
+                let active = false;
+                for (let i = 0; i < 5 && !active; i++) {
+                  await sleep(2000);
+                  try {
+                    const { data: wfInfo } = await github.rest.actions.getWorkflow({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      workflow_id: wf,
+                    });
+                    active = wfInfo.state === "active";
+                  } catch (e) {
+                    console.log(`Sprawdzanie stanu ${wf} nie powiodlo sie: ${e.message}`);
+                  }
+                }
+                if (!active) {
+                  console.log(`::warning::${wf} nie potwierdzil stanu 'active' po 5 probach -- dispatch i tak probuje, ale run moze utknac w 'Queued'.`);
+                }
               }
 
               console.log(`Uruchamiam ${wf} (arch=${archChoice}, zlb_source=${zlbSource}, zlb_version=${zlbVersion || "-"})`);
