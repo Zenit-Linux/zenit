@@ -90,7 +90,9 @@ jobs:
         run: zlb validate --manifest=devcontainer.hcl
 
       - name: Buduj obraz OCI (headless devcontainer)
-        run: zlb build oci --manifest=devcontainer.hcl --arch ${{ github.event.inputs.arch || 'x86_64' }}
+        # sudo wymagane -- patrz komentarz przy "zlb build rootfs" w
+        # build-standard.yml ("Permission denied: /var/cache/zpm/").
+        run: sudo env "PATH=$PATH" zlb build oci --manifest=devcontainer.hcl --arch ${{ github.event.inputs.arch || 'x86_64' }}
 
       - name: Zaloguj do ghcr.io
         if: github.event_name != 'pull_request'
