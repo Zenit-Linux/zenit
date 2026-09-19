@@ -88,11 +88,18 @@ runs:
       working-directory: ${{ runner.temp }}/zlb-src
       run: nimble install -d -y
 
-    - name: "zlb ze źródeł: janet build.janet"
+    - name: "zlb ze źródeł: janet build.janet release"
       if: ${{ inputs.mode == 'source' }}
       shell: bash
       working-directory: ${{ runner.temp }}/zlb-src
-      run: janet build.janet
+      # NAPRAWIONE: gole `janet build.janet` (bez argumentu) wywala sie w
+      # zlb/build.janet na "error: start index 2 out of range [-2,1]" --
+      # skrypt zawsze robi (array/slice (dyn :args) 2), a bez podania
+      # zadania (dyn :args) ma tylko 1 element (nazwe skryptu), wiec ciecie
+      # od indeksu 2 nigdy sie nie miesci. Jawne podanie "release" daje
+      # (dyn :args) dlugosci 2, ciecie wypada poprawnie i wywolywany jest
+      # dokladnie ten sam task-release co domyslnie mial byc wywolany.
+      run: janet build.janet release
 
     - name: "zlb ze źródeł: zainstaluj zbudowaną binarkę do PATH"
       if: ${{ inputs.mode == 'source' }}
@@ -118,11 +125,16 @@ runs:
       working-directory: ${{ runner.temp }}/zpm-src
       run: nimble install -d -y
 
-    - name: "zpm ze źródeł: janet build.janet"
+    - name: "zpm ze źródeł: janet build.janet release"
       if: ${{ inputs.mode == 'source' }}
       shell: bash
       working-directory: ${{ runner.temp }}/zpm-src
-      run: janet build.janet
+      # Ten sam problem i ta sama naprawa co przy "zlb ze zrodel: janet
+      # build.janet release" powyzej -- patrz komentarz tam. Zakladamy, ze
+      # zpm ma analogiczna strukture build.janet co zlb (tak jak prosiles);
+      # jesli zpm faktycznie NIE rozpoznaje zadania "release", zmien ten
+      # argument na wlasciwa nazwe zadania z build.janet w repo zpm.
+      run: janet build.janet release
 
     - name: "zpm ze źródeł: zainstaluj zbudowaną binarkę do PATH"
       if: ${{ inputs.mode == 'source' }}
