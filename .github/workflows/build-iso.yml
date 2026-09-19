@@ -87,11 +87,13 @@ jobs:
 
       - name: zlb build rootfs
         if: ${{ github.event.inputs.arch == '' || github.event.inputs.arch == matrix.arch }}
-        run: zlb build rootfs --arch ${{ matrix.arch }}
+        # sudo wymagane -- patrz komentarz przy tym samym kroku w
+        # build-standard.yml ("Permission denied: /var/cache/zpm/").
+        run: sudo env "PATH=$PATH" zlb build rootfs --arch ${{ matrix.arch }}
 
       - name: zlb build iso
         if: ${{ github.event.inputs.arch == '' || github.event.inputs.arch == matrix.arch }}
-        run: zlb build iso --arch ${{ matrix.arch }}
+        run: sudo env "PATH=$PATH" zlb build iso --arch ${{ matrix.arch }}
 
       - name: Upload artifacts
         if: ${{ github.event.inputs.arch == '' || github.event.inputs.arch == matrix.arch }}
