@@ -92,14 +92,26 @@ runs:
       if: ${{ inputs.mode == 'source' }}
       shell: bash
       working-directory: ${{ runner.temp }}/zlb-src
-      # NAPRAWIONE: gole `janet build.janet` (bez argumentu) wywala sie w
-      # zlb/build.janet na "error: start index 2 out of range [-2,1]" --
-      # skrypt zawsze robi (array/slice (dyn :args) 2), a bez podania
-      # zadania (dyn :args) ma tylko 1 element (nazwe skryptu), wiec ciecie
-      # od indeksu 2 nigdy sie nie miesci. Jawne podanie "release" daje
-      # (dyn :args) dlugosci 2, ciecie wypada poprawnie i wywolywany jest
-      # dokladnie ten sam task-release co domyslnie mial byc wywolany.
-      run: janet build.janet release
+      # NAPRAWIONE (v0.6): `janet build.janet release` samo w sobie konczylo
+      # sie exit 1 mimo ze KOMPILACJA SIE UDAWALA. Przyczyna: build.janet
+      # definiuje na najwyzszym poziomie funkcje `main` i DODATKOWO explicite
+      # ja woła na koncu pliku. Janet CLI ma udokumentowane zachowanie: gdy
+      # uruchamiasz plik BEZPOSREDNIO jako `janet plik.janet arg...` i plik
+      # definiuje `main`, CLI samo, automatycznie, woła `main` PO WCZYTANIU
+      # pliku, przekazujac surowe (dyn :args) jako argumenty. Wiec dzieje sie
+      # tak: (1) explicit wywolanie na dole build.janet poprawnie odpala
+      # task-release -> kompilacja SIE UDAJE; (2) zaraz potem Janet SAM
+      # dodatkowo woła main() drugi raz, tym razem z (dyn :args) na surowo
+      # (gdzie pierwszy element to sciezka do skryptu) -> task="build.janet"
+      # -> trafia w domyslna galaz -> "Nieznane zadanie: build.janet" ->
+      # exit 1. Zaden zestaw argumentow po naszej stronie tego nie omija --
+      # to wlasciwosc strukturalna pliku (zweryfikowane na zywym repo
+      # Zenit-Linux/zlb). Obejscie: ladujemy plik przez `dofile` z poziomu
+      # `janet -e` zamiast uruchamiac go jako bezposredni argument CLI --
+      # `dofile` NIE ma automatycznego drugiego wywolania `main`, wiec
+      # dziala tylko to jedno, poprawne, explicit wywolanie.
+      run: |
+        janet -e '(setdyn :args @["build.janet" "release"]) (dofile "build.janet")'
 
     - name: "zlb ze źródeł: zainstaluj zbudowaną binarkę do PATH"
       if: ${{ inputs.mode == 'source' }}
@@ -129,12 +141,16 @@ runs:
       if: ${{ inputs.mode == 'source' }}
       shell: bash
       working-directory: ${{ runner.temp }}/zpm-src
-      # Ten sam problem i ta sama naprawa co przy "zlb ze zrodel: janet
-      # build.janet release" powyzej -- patrz komentarz tam. Zakladamy, ze
-      # zpm ma analogiczna strukture build.janet co zlb (tak jak prosiles);
-      # jesli zpm faktycznie NIE rozpoznaje zadania "release", zmien ten
-      # argument na wlasciwa nazwe zadania z build.janet w repo zpm.
-      run: janet build.janet release
+      # Ten sam problem i to samo obejscie co przy "zlb ze zrodel: janet
+      # build.janet release" powyzej -- patrz komentarz tam (auto-wywolanie
+      # `main` przez Janet CLI po wczytaniu pliku, kolidujace z explicit
+      # wywolaniem w build.janet). Zakladamy, ze zpm ma analogiczna
+      # strukture build.janet co zlb (tak jak prosiles); `dofile` jest
+      # bezpiecznym wyborem nawet jesli struktura jest inna -- jesli zpm
+      # NIE definiuje `main` na najwyzszym poziomie, `dofile` po prostu
+      # wykona plik normalnie, bez żadnego efektu ubocznego.
+      run: |
+        janet -e '(setdyn :args @["build.janet" "release"]) (dofile "build.janet")'
 
     - name: "zpm ze źródeł: zainstaluj zbudowaną binarkę do PATH"
       if: ${{ inputs.mode == 'source' }}
