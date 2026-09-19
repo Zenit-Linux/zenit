@@ -73,9 +73,7 @@ runs:
 
     - name: "zlb ze źródeł: zainstaluj Janet (potrzebny do uruchomienia build.janet)"
       if: ${{ inputs.mode == 'source' }}
-      shell: bash
-      run: |
-        sudo apt-get install -y janet || (curl -fsSL https://janet-lang.org/install.sh | sudo bash)
+      uses: ./.github/actions/install-janet
 
     - name: "zlb ze źródeł: git clone Zenit-Linux/zlb"
       if: ${{ inputs.mode == 'source' }}
