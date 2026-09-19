@@ -28,13 +28,13 @@ package "kernel" {
   variant     = "stable"
   description = "domyślne jądro Linux (branch: stable; dostępne też: rolling/semi-rolling/testing)"
 }
-package "zsrv" {
+package "zenit-base" {
   backend     = "own"
-  description = "domyślny init system Zenit (alternatywa dla systemd w przyszłych obrazach minimalnych)"
+  description = "domyślny init system Zenit (zsrv) -- dostarczany jako pakiet 'zenit-base' w own-repository.json, NIE jako osobne narzędzie 'zsrv' (takiej pozycji tam nie ma)"
 }
 package "zboot" {
   backend     = "own"
-  description = "domyślny bootloader Zenit (alternatywa dla grub w przyszłych obrazach minimalnych)"
+  description = "domyślny bootloader Zenit (alternatywa dla grub w przyszłych obrazach minimalnych) -- UWAGA: 'zboot' też nie istnieje jako osobna pozycja w own-repository.json (podobnie jak zsrv/zenit-base); jeśli jest dostarczany w ramach innego pakietu, popraw nazwę tak jak wyzej przy zenit-base"
 }
 
 # --- narzędzia dodatkowe z jawnie wybranych backendów ---
