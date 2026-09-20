@@ -9,9 +9,20 @@ package "network-manager" {
   backend     = "apt"
   description = "NAPRAWIONE: prawdziwa nazwa pakietu Ubuntu/Debian to 'network-manager' (z myślnikiem) -- 'networkmanager' (jedno słowo) nie istnieje w apt, apt-get zwracał 'E: Unable to locate package networkmanager'"
 }
-package "grub" {
+package "grub-pc" {
   backend     = "apt"
-  description = "UWAGA: 'grub' nie ma kandydata do instalacji w apt (zastąpione przez grub2-common/grub-pc/grub-efi-ia32/grub-efi-amd64) -- prawdziwa nazwa jest RÓŻNA per architektura (np. grub-efi-amd64 na x86_64 vs grub-efi-arm64 na aarch64, a grub-pc w ogóle nie istnieje na aarch64), a package.list nie ma składni warunkowej per-arch, więc nie zgaduję tu jednej nazwy na wszystkie architektury -- podmień 'grub' na właściwą nazwę(y) pakietu(ów) dla docelowego schematu bootowania (BIOS/UEFI) i architektur"
+  arch        = "x86_64"
+  description = "GRUB dla BIOS/legacy boot (x86_64) -- razem z grub-efi-amd64 daje hybrydowe ISO (BIOS+UEFI), najszersza kompatybilność ze sprzętem/VM. Zweryfikowane realnie: pakiet istnieje w archive.ubuntu.com."
+}
+package "grub-efi-amd64" {
+  backend     = "apt"
+  arch        = "x86_64"
+  description = "GRUB dla UEFI (x86_64). Zweryfikowane realnie: pakiet istnieje w archive.ubuntu.com."
+}
+package "grub-efi-arm64" {
+  backend     = "apt"
+  arch        = "aarch64"
+  description = "GRUB dla UEFI (aarch64 nie wspiera legacy BIOS, więc tylko ten wariant). Zweryfikowane realnie względem indeksu binary-arm64 w archive.ubuntu.com."
 }
 package "efibootmgr" {
   backend = "apt"
