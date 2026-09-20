@@ -5,11 +5,13 @@ package "linux-firmware" {}
 package "systemd" {
   backend = "apt"
 }
-package "networkmanager" {
-  backend = "apt"
+package "network-manager" {
+  backend     = "apt"
+  description = "NAPRAWIONE: prawdziwa nazwa pakietu Ubuntu/Debian to 'network-manager' (z myślnikiem) -- 'networkmanager' (jedno słowo) nie istnieje w apt, apt-get zwracał 'E: Unable to locate package networkmanager'"
 }
 package "grub" {
-  backend = "apt"
+  backend     = "apt"
+  description = "UWAGA: 'grub' nie ma kandydata do instalacji w apt (zastąpione przez grub2-common/grub-pc/grub-efi-ia32/grub-efi-amd64) -- prawdziwa nazwa jest RÓŻNA per architektura (np. grub-efi-amd64 na x86_64 vs grub-efi-arm64 na aarch64, a grub-pc w ogóle nie istnieje na aarch64), a package.list nie ma składni warunkowej per-arch, więc nie zgaduję tu jednej nazwy na wszystkie architektury -- podmień 'grub' na właściwą nazwę(y) pakietu(ów) dla docelowego schematu bootowania (BIOS/UEFI) i architektur"
 }
 package "efibootmgr" {
   backend = "apt"
@@ -30,11 +32,7 @@ package "kernel" {
 }
 package "zenit-base" {
   backend     = "own"
-  description = "domyślny init system Zenit (zsrv) -- dostarczany jako pakiet 'zenit-base' w own-repository.json, NIE jako osobne narzędzie 'zsrv' (takiej pozycji tam nie ma)"
-}
-package "zboot" {
-  backend     = "own"
-  description = "domyślny bootloader Zenit (alternatywa dla grub w przyszłych obrazach minimalnych) -- UWAGA: 'zboot' też nie istnieje jako osobna pozycja w own-repository.json (podobnie jak zsrv/zenit-base); jeśli jest dostarczany w ramach innego pakietu, popraw nazwę tak jak wyzej przy zenit-base"
+  description = "NAPRAWIONE: wszystkie \"coreutils\" Zenita (init system zsrv, bootloader zboot, itd.) są w JEDNYM pakiecie 'zenit-base' w own-repository.json -- nie ma osobnych 'zsrv'/'zboot' do zainstalowania, więc nie dublujemy tego jako osobne wpisy niżej"
 }
 
 # --- narzędzia dodatkowe z jawnie wybranych backendów ---
@@ -51,8 +49,16 @@ package "git" {
   # zamiast z natywnych repo hosta.
   # variant = "debian.testing"
 }
+package "cargo" {
+  backend     = "apt"
+  description = "NAPRAWIONE: wymagane PRZED 'ripgrep' (backend cargo) -- bez tego runInChroot w zpm dostaje '/bin/sh: 1: cargo: not found', bo w świeżo zbootstrapowanym rootfs nie ma jeszcze żadnego Rust/cargo"
+}
 package "ripgrep" {
   backend = "cargo"
+}
+package "flatpak" {
+  backend     = "apt"
+  description = "NAPRAWIONE: wymagane PRZED 'firefox' (backend flatpak) -- bez tego runInChroot w zpm dostaje '/bin/sh: 1: flatpak: not found'"
 }
 package "firefox" {
   backend = "flatpak"
