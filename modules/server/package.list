@@ -9,12 +9,24 @@ package "linux-firmware" {}
 package "systemd" {
   backend = "apt"
 }
-package "networkmanager" {
+package "network-manager" {
   backend     = "apt"
-  description = "ta sama sieć co edycja desktopowa -- łatwiejsza migracja konfiguracji"
+  description = "ta sama sieć co edycja desktopowa -- łatwiejsza migracja konfiguracji. NAPRAWIONE: prawdziwa nazwa pakietu to 'network-manager' (z myślnikiem), nie 'networkmanager' -- patrz modules/core/package.list"
 }
-package "grub" {
-  backend = "apt"
+package "grub-pc" {
+  backend     = "apt"
+  arch        = "x86_64"
+  description = "GRUB dla BIOS/legacy boot (x86_64) -- jak w modules/core/package.list, hybrydowe BIOS+UEFI. Zweryfikowane realnie w archive.ubuntu.com."
+}
+package "grub-efi-amd64" {
+  backend     = "apt"
+  arch        = "x86_64"
+  description = "GRUB dla UEFI (x86_64). Zweryfikowane realnie w archive.ubuntu.com."
+}
+package "grub-efi-arm64" {
+  backend     = "apt"
+  arch        = "aarch64"
+  description = "GRUB dla UEFI (aarch64). Zweryfikowane realnie względem indeksu binary-arm64 w archive.ubuntu.com."
 }
 package "efibootmgr" {
   backend = "apt"
