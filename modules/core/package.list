@@ -60,8 +60,9 @@ package "flatpak" {
   backend     = "apt"
   description = "NAPRAWIONE: wymagane PRZED 'firefox' (backend flatpak) -- bez tego runInChroot w zpm dostaje '/bin/sh: 1: flatpak: not found'"
 }
-package "firefox" {
-  backend = "flatpak"
+package "org.mozilla.firefox" {
+  backend     = "flatpak"
+  description = "NAPRAWIONE: Flatpak wymaga pelnego ID aplikacji w formacie reverse-DNS (min. 2 kropki) -- 'firefox' samo w sobie odrzucane bledem 'Invalid id firefox: Names must contain at least 2 periods'. Prawdziwe ID na Flathub to 'org.mozilla.firefox'."
 }
 
 # --- pakiet bez żadnych opcji: backend wzięty z domyślnej dystrybucji
